@@ -2,8 +2,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 
 on applyWLPlant(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV 
+  q2 = q
+  c2 = c 
   amount = 20
   case lrSup of
     "All":
@@ -177,8 +177,8 @@ end
 
 
 on applyMiniGrowers me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -219,7 +219,7 @@ on applyMiniGrowers me, q, c, eftc
         member("layer"&string(d)).image.copyPixels(member("pxl").image, rect(pnt.locH-1, h, pnt.locH, h+2), member("pxl").image.rect, {#color:colr})
       end if
       
-      tlPos = giveGridPos(point(pnt.locH, h)) + gRenderCameraTilePos
+      tlPos = giveGridPos(point(pnt.locH, h)) 
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -245,8 +245,8 @@ end
 
 
 on ApplySpinets me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -292,7 +292,7 @@ on ApplySpinets me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -339,7 +339,7 @@ on ApplySpinets me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
       end if
@@ -364,8 +364,8 @@ on ApplySpinets me, q, c, eftc
 end
 
 on applyColoredHangRoots me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   frontWall = 0
   backWall = 29
@@ -410,7 +410,7 @@ on applyColoredHangRoots me, q, c, eftc
     rgthBorder =  mdPnt.locH+10
     
     
-    repeat while pnt.locV+gRenderCameraTilePos.locV*20 > -100 then
+    repeat while pnt.locV > -100 then
       
       -- member("layer"&string(d)).image.copyPixels(member("pxl").image, rect(pnt.locH-1, h, pnt.locH+2, h+2), member("pxl").image.rect, {#color:colr})
       lstPos = pnt
@@ -431,11 +431,11 @@ on applyColoredHangRoots me, q, c, eftc
       
       --copyPixelsToRootEffectColor(gdLayer, d, qd, "pxl", member("pxl").image.rect, 0.5)
       
-      if solidAfaMv(giveGridPos(lstPos) + gRenderCameraTilePos, lr) = 1 then
+      if solidAfaMv(giveGridPos(lstPos), lr) = 1 then
         exit repeat
       end if
       
-      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos) + gRenderCameraTilePos) = 0 then
+      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos)) = 0 then
         exit
       end if
       
@@ -455,8 +455,8 @@ end
 
 
 on applyColoredThickRoots me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   frontWall = 0
   backWall = 29
@@ -510,7 +510,7 @@ on applyColoredThickRoots me, q, c, eftc
     thickness = (gEEprops.effects[r].mtrx[q2][c2]/100.0)*power(random(10000)/10000.0, 0.3)
     
     
-    repeat while pnt.locV+gRenderCameraTilePos.locV*20 > -100 then
+    repeat while pnt.locV > -100 then
       
       floatDpth = floatDpth + lerp(-0.3, 0.3, random(1000)/1000.0)
       if(floatDpth < frontWall)then
@@ -524,8 +524,8 @@ on applyColoredThickRoots me, q, c, eftc
       dir = lerp(dir, -45+random(90), 0.5)
       pnt = pnt + degToVec(dir)*(2+random(6))
       
-      lstGridPos = giveGridPos(lstPos) + gRenderCameraTilePos
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      lstGridPos = giveGridPos(lstPos)
+      gridPos = giveGridPos(pnt)
       
       
       tlt = 0
@@ -535,7 +535,7 @@ on applyColoredThickRoots me, q, c, eftc
         end if
       end repeat
       pnt.locH = pnt.locH + (tlt/100.0)*2.0
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      gridPos = giveGridPos(pnt)
       
       
       if(lstGridPos.locH <> gridPos.locH) then
@@ -600,8 +600,8 @@ end
 
 
 on applyColoredShadowPlants me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   frontWall = 0
   backWall = 29
@@ -654,7 +654,7 @@ on applyColoredShadowPlants me, q, c, eftc
     
     tltFac = 0.0
     
-    repeat while pnt.locV+gRenderCameraTilePos.locV*20 > -100 then
+    repeat while pnt.locV > -100 then
       cntr = cntr + 1
       
       lstPos = pnt
@@ -664,8 +664,8 @@ on applyColoredShadowPlants me, q, c, eftc
       if(cycle > 35) then cycle = 35
       pnt = pnt + degToVec(dir)*3
       
-      lstGridPos = giveGridPos(lstPos) + gRenderCameraTilePos
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      lstGridPos = giveGridPos(lstPos)
+      gridPos = giveGridPos(pnt)
       
       tlt = 0
       repeat with q = -1 to 1 then
@@ -674,7 +674,7 @@ on applyColoredShadowPlants me, q, c, eftc
         end if
       end repeat
       pnt.locH = pnt.locH + (tlt/100.0)*lerp(-2.0, 1.0, power(tltFac, 0.85))
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      gridPos = giveGridPos(pnt)
       
       tltFac = tltFac + 0.002
       if(tltFac > 1.0)then tltFac = 1.0
@@ -772,8 +772,8 @@ end
 
 
 on applyRootPlants me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   frontWall = 0
   backWall = 29
@@ -826,7 +826,7 @@ on applyRootPlants me, q, c, eftc
     
     tltFac = 0.0
     
-    repeat while pnt.locV+gRenderCameraTilePos.locV*20 > -100 then
+    repeat while pnt.locV > -100 then
       cntr = cntr + 1
       
       lstPos = pnt
@@ -836,8 +836,8 @@ on applyRootPlants me, q, c, eftc
       if(cycle > 35) then cycle = 35
       pnt = pnt + degToVec(dir)*3
       
-      lstGridPos = giveGridPos(lstPos) + gRenderCameraTilePos
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      lstGridPos = giveGridPos(lstPos)
+      gridPos = giveGridPos(pnt)
       
       tlt = 0
       repeat with q = -1 to 1 then
@@ -846,7 +846,7 @@ on applyRootPlants me, q, c, eftc
         end if
       end repeat
       pnt.locH = pnt.locH + (tlt/100.0)*lerp(-2.0, 1.0, power(tltFac, 0.85))
-      gridPos = giveGridPos(pnt) + gRenderCameraTilePos
+      gridPos = giveGridPos(pnt)
       
       tltFac = tltFac + 0.002
       if(tltFac > 1.0)then tltFac = 1.0
@@ -908,8 +908,8 @@ end
 
 
 on applyWastewaterMold me, q, c, amount
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   mdPnt = giveMiddleOfTile(point(q,c))
   
@@ -969,7 +969,7 @@ on applyWastewaterMold me, q, c, amount
     
     if(solid = 0)then
       repeat with dr in [point(-1,0), point(0,-1), point(0,1), point(1,0)]then
-        if(solidAfaMv(giveGridPos(startPos + dr*rad)+gRenderCameraTilePos, lr) = 1)then
+        if(solidAfaMv(giveGridPos(startPos + dr*rad), lr) = 1)then
           solid = 1
           exit repeat
         end if
@@ -1010,8 +1010,8 @@ end
 
 
 on applyFlowers me, q, c, amount
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   mdPnt = giveMiddleOfTile(point(q,c))
   
@@ -1072,7 +1072,7 @@ on applyFlowers me, q, c, amount
     
     if(solid = 0)then
       repeat with dr in [point(-1,0), point(0,-1), point(0,1), point(1,0)]then
-        if(solidAfaMv(giveGridPos(startPos + dr*rad)+gRenderCameraTilePos, lr) = 1)then
+        if(solidAfaMv(giveGridPos(startPos + dr*rad), lr) = 1)then
           solid = 1
           exit repeat
         end if
@@ -1127,8 +1127,8 @@ end
 
 
 on applyColoredWires me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   global gCurrentRenderCamera
   
@@ -1196,7 +1196,7 @@ on applyColoredWires me, q, c, eftc
         
         
         
-        tlPos = giveGridPos(point(pnt.locH, pnt.locV)) + gRenderCameraTilePos
+        tlPos = giveGridPos(point(pnt.locH, pnt.locV))
         if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
           exit repeat
         else 
@@ -1226,8 +1226,8 @@ on applyColoredWires me, q, c, eftc
 end
 
 on applyColoredChains me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   global gCurrentRenderCamera
   
@@ -1265,7 +1265,7 @@ on applyColoredChains me, q, c, eftc
     mdPnt = giveMiddleOfTile(point(q,c))
     startPos = mdPnt+point(-11+random(21), -11+random(21))
     
-    myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
+    myCamera = me.closestCamera(startPos)
     if(myCamera = 0)then
       --exit
     end if
@@ -1333,7 +1333,7 @@ on applyColoredChains me, q, c, eftc
         end if
         
         if checkterrain then
-          tlPos = giveGridPos(point(pnt.locH, pnt.locV)) + gRenderCameraTilePos
+          tlPos = giveGridPos(point(pnt.locH, pnt.locV))
           if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
             exit repeat
           else 
@@ -1366,8 +1366,8 @@ on applyColoredChains me, q, c, eftc
 end
 
 on applyRingChains me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   global gCurrentRenderCamera
   
@@ -1399,7 +1399,7 @@ on applyRingChains me, q, c, eftc
     mdPnt = giveMiddleOfTile(point(q,c))
     startPos = mdPnt+point(-11+random(21), -11+random(21))
     
-    myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
+    myCamera = me.closestCamera(startPos)
     if(myCamera = 0)then
       --exit
     end if
@@ -1448,7 +1448,7 @@ on applyRingChains me, q, c, eftc
         end if
         
         if checkterrain then
-          tlPos = giveGridPos(point(pnt.locH, pnt.locV)) + gRenderCameraTilePos
+          tlPos = giveGridPos(point(pnt.locH, pnt.locV))
           if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
             exit repeat
           else 
@@ -1513,8 +1513,8 @@ end
 
 
 on applyColoredFungiFlower me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   case lrSup of
@@ -1596,8 +1596,8 @@ end
 
 
 on applyColoredLHFlower me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   case lrSup of
@@ -1648,8 +1648,8 @@ on applyColoredLHFlower me, q, c
 end 
 
 on applyAssortedTrash me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   
@@ -1704,8 +1704,8 @@ end
 
 
 on applyResRoots me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of
     "All":
@@ -1777,8 +1777,8 @@ on applyResRoots me, q, c
 end
 
 on applyFoliage me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   
@@ -1829,8 +1829,8 @@ on applyFoliage me, q, c
 end 
 
 on applyMistletoe me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   
@@ -1881,8 +1881,8 @@ on applyMistletoe me, q, c
 end 
 
 on applyHighFern me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   
@@ -1933,8 +1933,8 @@ on applyHighFern me, q, c
 end 
 
 on applyHighGrass me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   
@@ -1985,8 +1985,8 @@ on applyHighGrass me, q, c
 end 
 
 on applySmallSprings me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   lr = 1
   case lrSup of
