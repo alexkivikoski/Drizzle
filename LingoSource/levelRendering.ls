@@ -18,8 +18,8 @@ on renderLevel()
   gRenderTrashProps = []
   
   RENDER = 0
-  cols = 100--gLOprops.size.loch
-  rows = 60--gLOprops.size.locv
+  cols = gLOprops.size.loch
+  rows = gLOprops.size.locv
   
   -- member("bkgBkgImage").image = image(cols*20, rows*20, 16)
   member("finalImage").image = image(cols*20, rows*20, 32)
@@ -42,9 +42,9 @@ end
 
 
 on setUpLayer(layer)
-  -- global gLoprops
-  cols = 100--gLoprops.size.loch
-  rows = 60--gLoprops.size.locv
+  
+  cols = gLOprops.size.loch
+  rows = gLOprops.size.locv
   tlset = member("tileSet1").image.duplicate()
   if layer = 1 then
     dpt = 0
@@ -64,7 +64,7 @@ on setUpLayer(layer)
   --      member("concreteTexture").image.copyPixels( member("concreteTexture2").image, rect((q-1)*108, (c-1)*108,q*108,c*108), rect(0,0,108,108) )
   --    end repeat
   --  end repeat
-  global gLOprops
+  
   
   member("vertImg").image = image(cols*20, rows*20, 32)
   member("horiImg").image = image(cols*20, rows*20, 32)
@@ -80,20 +80,19 @@ on setUpLayer(layer)
   -- depthPnt(pnt, dpt)
   repeat with q = 1 to cols then
     repeat with c = 1 to rows then
-      -- if((q >= gRenderCameraTilePos.locH)and(q < gRenderCameraTilePos.locH + cols)and(c >= gRenderCameraTilePos.locV)and(c < gRenderCameraTilePos.locV + rows))or(checkIfTileHasMaterialRenderTypeTiles(point(q,c), layer))then
-      if(q+gRenderCameraTilePos.locH > 0)and(q+gRenderCameraTilePos.locH <= gLOprops.size.locH)and(c+gRenderCameraTilePos.locV > 0)and(c+gRenderCameraTilePos.locV <= gLOprops.size.locV)then
-        ps = point(q,c)+gRenderCameraTilePos
-        
+   
+        ps = point(q,c)
+
         tp = gLEProps.matrix[ps.loch][ps.locV][layer][1]
         
         
         repeat with t in gLEProps.matrix[ps.locH][ps.locV][layer][2] then
           case t of
             1:
-              rct = rect((q-1)*20, (c-1)*20, q*20, c*20)+rect(0, 8, 0, -8)--rect(gRenderCameraTilePos,gRenderCameraTilePos)*20
+              rct = rect((q-1)*20, (c-1)*20, q*20, c*20)+rect(0, 8, 0, -8)
               mdlFrntImg.copyPixels(member("pxl").image, rct, member("pxl").image.rect, {color:poleCol})
             2:
-              rct = rect((q-1)*20, (c-1)*20, q*20, c*20)+rect(8, 0, -8, 0)--rect(gRenderCameraTilePos,gRenderCameraTilePos)*20
+              rct = rect((q-1)*20, (c-1)*20, q*20, c*20)+rect(8, 0, -8, 0)
               mdlFrntImg.copyPixels(member("pxl").image, rct, member("pxl").image.rect, {color:poleCol})
             3:
               -- rct = rect((q-1)*20, (c-1)*20, q*20, c*20)--+rect(0, 8, 0, -8)
@@ -113,14 +112,14 @@ on setUpLayer(layer)
             if layer = 1 then
               if gLEProps.matrix[ps.locH][ps.locV][1][1]=1 then
                 if ["material", "default"].getPos(gTEprops.tlMatrix[ps.locH][ps.locV][layer].tp) <> 0 then--------------------
-                  shortCuts.add(point(ps.locH,ps.locV))
+                  shortcuts.add(point(ps.locH,ps.locV))
                 end if
               end if 
             else if layer = 2 then
               if gLEProps.matrix[ps.locH][ps.locV][2][1]=1 then
                 if gLEProps.matrix[ps.locH][ps.locV][1][1]<>1 then
                   if ["material", "default"].getPos(gTEprops.tlMatrix[ps.locH][ps.locV][layer].tp) <> 0 then--------------------
-                    shortCuts.add(point(ps.locH,ps.locV))
+                    shortcuts.add(point(ps.locH,ps.locV))
                   end if
                 end if 
               end if
@@ -141,7 +140,6 @@ on setUpLayer(layer)
         end if
         
         
-      end if
     end repeat
   end repeat
   
@@ -338,10 +336,10 @@ on setUpLayer(layer)
   
   
   --shortCuts.sort()
-  repeat with tl in shortCuts then
-    if (shortCuts.getPos(tl+point(-1,0))>0)and((shortCuts.getPos(tl+point(1,0))>0))then--------------------
+  repeat with tl in shortcuts then
+    if (shortcuts.getPos(tl+point(-1,0))>0)and((shortcuts.getPos(tl+point(1,0))>0))then--------------------
       drawATileTile(tl.locH, tl.locV, layer,  [#nm:"shortCutHorizontal", #sz:point(1,1), #specs:[], #specs2:void, #tp:"voxelStruct", #repeatL:[1, 9], #bfTiles:0, #rnd:1, #ptPos:0, #tags:[]], frntImg)
-    else if (shortCuts.getPos(tl+point(0,-1))>0)and((shortCuts.getPos(tl+point(0,1))>0))then--------------------
+    else if (shortcuts.getPos(tl+point(0,-1))>0)and((shortcuts.getPos(tl+point(0,1))>0))then--------------------
       drawATileTile(tl.locH, tl.locV, layer,  [#nm:"shortCutVertical", #sz:point(1,1), #specs:[], #specs2:void, #tp:"voxelStruct", #repeatL:[1, 9], #bfTiles:0, #rnd:1, #ptPos:0, #tags:[]], frntImg)
     else
       drawATileTile(tl.locH, tl.locV, layer,  [#nm:"shortCutTile", #sz:point(1,1), #specs:[], #specs2:void, #tp:"voxelStruct", #repeatL:[1, 9], #bfTiles:0, #rnd:1, #ptPos:0, #tags:[]], frntImg)
@@ -359,9 +357,11 @@ on setUpLayer(layer)
     -- frntImg = drawAShortCut(tl[2], tl[3], layer, pltt, frntImg)
     -- put gShortcuts
     tp = "shortCut"
+    
     if gShortcuts.indexL.getPos(point(tl[2], tl[3])-gRenderCameraTilePos)>0 then--------------------
       tp = gShortcuts.scs[gShortcuts.indexL.getPos(point(tl[2], tl[3])-gRenderCameraTilePos)]--------------------
     end if
+
     
     mem = "shortCut"
     if tp = "shortCut" then
@@ -402,8 +402,8 @@ on setUpLayer(layer)
   end if
   repeat with q = 1 to cols then
     repeat with c = 1 to rows then
-      q2 = q + gRenderCameraTilePos.locH
-      c2 = c + gRenderCameraTilePos.locV
+      q2 = q 
+      c2 = c
       
       if(q2 > 1)and(q2 < gLOprops.size.locH)and(c2 > 1)and(c2 < gLOprops.size.locV)then
         if (gLEProps.matrix[q2][c2][layer][2].getPos(11) > 0)then--------------------
@@ -554,8 +554,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
           end if
         end if
         gtRect: rect = rect((gtAtH-1)*10, (gtAtV-1)*10, gtAtH*10, gtAtV*10)+rect(-5,-5, 5, 5)
-        pstRect = pstRect - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
-        
+         
         
         --  member("layer"&string(dp)).image.copyPixels(member("tileSet"&string(myTileSet)).image, pstRect+rect(-5,-5, 5, 5), gtRect, {#ink:36})
         if (mat <> "Sand Block") then
@@ -576,7 +575,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
       type slp:       number
       type askDirs:   list
       type myAskDirs: list
-      pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+      pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) 
       
       repeat with ad = 1 to myAskDirs.count then
         type ad: number
@@ -604,7 +603,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
       end repeat
     6:
       if (mat <> "Invisible") then
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20)
         if (mat = "Stained Glass") then
           drawATileTile(q, c, l, [#nm:"SGFL", #sz:point(1,1), #specs:[], #specs2:void, #tp:"voxelStruct", #repeatL:[10], #bfTiles:0, #rnd:1, #ptPos:0, #tags:[]], frntImg)
         else if (gDRMatFixes) or ((mat <> "Sand Block") and (mat <> "Scaffolding") and (mat <> "Tiny Signs")) then
@@ -630,7 +629,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
     case gLEProps.matrix[q][c][l][1] of
       1:
         
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) 
         --put mat&"Texture"
         -- put member(mat&"Texture")
         member("layer"&string(dp)).image.copyPixels(member(mat&"Texture").image, pstRect, gtRect, {#ink:36})  
@@ -650,7 +649,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
             rct = rect((q-1)*20, (c-1)*20, q*20, c*20)
             rct = [point(rct.right, rct.bottom), point(rct.right, rct.bottom), point(rct.left, rct.top), point(rct.right, rct.top)]
         end case
-        rct = rct - [gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos]*20
+        
         member("layer"&string(dp)).image.copyPixels(member("pxl").image, rct, rect(0,0,1,1), {#color:color(255,255,255)})
     end case
   end if
@@ -663,8 +662,8 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
     var = "1"
     clr1 = "A"
     clr2 = "B"
-    q2 = q + gRenderCameraTilePos.locH
-    c2 = c + gRenderCameraTilePos.locV
+    q2 = q 
+    c2 = c
     repeat with nav = 1 to gEEprops.effects.count
       if(gEEprops.effects[nav].nm = "Stained Glass Properties")then
         if (gEEprops.effects[nav].mtrx[q][c] >= 1) then
@@ -705,7 +704,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
     case gLEProps.matrix[q][c][l][1] of
       1:
         
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20)
         member("layer"&string(dp)).image.copyPixels(member(imgLoad&var&"Socket").image, pstRect, gtRect, {#color:color(0, 255, 0), #ink:36})
         --repeat with den = 1 to 9 then
         member("layer"&string(dp+1)).image.copyPixels(member(imgLoad&var&"Socket").image, pstRect, gtRect, {#color:color(0, 255, 0), #ink:36})
@@ -737,14 +736,14 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
             rct = rect((q-1)*20, (c-1)*20, q*20, c*20)
             rct = [point(rct.right, rct.bottom), point(rct.right, rct.bottom), point(rct.left, rct.top), point(rct.right, rct.top)]
         end case
-        rct = rct - [gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos]*20
+        
         repeat with vj = 0 to 1 then
           member("layer"&string(dp+vj)).image.copyPixels(member("pxl").image, rct, rect(0,0,1,1), {#color:color(255,255,255)})
           --vj = vj + 1
         end repeat
         
       6:
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) 
         member("layer"&string(dp)).image.copyPixels(member(imgLoad&var&"Socket").image, pstRect, gtRect, {#color:color(0, 255, 0), #ink:36})
         --repeat with des = 1 to 9 then
         member("layer"&string(dp+1)).image.copyPixels(member(imgLoad&var&"Socket").image, pstRect, gtRect, {#color:color(0, 255, 0), #ink:36})
@@ -758,7 +757,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
             rct = rect((q-1)*20, (c-1)*20+10, q*20, c*20)
             rct = [point(rct.right, rct.bottom), point(rct.left, rct.bottom), point(rct.left, rct.top), point(rct.right, rct.top)]
         end case
-        rct = rct - [gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos]*20
+        
         repeat with v6 = 0 to 1 then
           member("layer"&string(dp+v6)).image.copyPixels(member("pxl").image, rct, rect(0,0,1,1), {#color:color(255,255,255)})
           --v6 = v6 + 1
@@ -774,7 +773,7 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
     case gLEProps.matrix[q][c][l][1] of
       1:
         
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20) 
         rnd = random(4)
         repeat with dep = 0 to 9
           member("layer"&string(dp+dep)).image.copyPixels(member(mat&"Texture"&string(random(4))).image, pstRect, gtRect, {#ink:36})
@@ -800,13 +799,13 @@ on drawATileMaterial(q: number, c: number, l: number, mat: string, frntImg: imag
             rct = rect((q-1)*20, (c-1)*20, q*20, c*20)
             rct = [point(rct.right, rct.bottom), point(rct.right, rct.bottom), point(rct.left, rct.top), point(rct.right, rct.top)]
         end case
-        rct = rct - [gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos]*20
+        
         repeat with dep = 0 to 9
           member("layer"&string(dp+dep)).image.copyPixels(member("pxl").image, rct, rect(0,0,1,1), {#color:color(255,255,255)})
           --dep = dep+1
         end repeat
       6:
-        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20-10) - rect(gRenderCameraTilePos, gRenderCameraTilePos)*20
+        pstRect = rect((q-1)*20, (c-1)*20, q*20, c*20-10) 
         repeat with dep = 0 to 9
           member("layer"&string(dp+dep)).image.copyPixels(member(mat&"Texture"&string(random(4))).image, pstRect, gtRect, {#ink:36})
           --dep = dep+1
@@ -861,7 +860,8 @@ on drawRidgeTypeTile(mat, tl, layer, frntImg)
   if (distanceToAir >= 1) then
     layRB = (layer - 1) * 10
     dp = layRB
-    dsct = giveMiddleOfTile(tl - gRenderCameraTilePos)
+    --dsct = giveMiddleOfTile(tl)
+    dsct = giveMiddleOfTile(tl)
     pos = dsct
     if (distanceToAir = 1) then
       member("layer" & string(layRB + 2)).image.copyPixels(member("ridgeBase").image, rect(pos.locH - 10, pos.locV - 10, pos.locH + 10, pos.locV + 10), rect(0, 0, 22, 22), {#ink:36})
@@ -898,8 +898,6 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
     tileImage = cacheLoadImage("Graphics" & the dirSeparator & tl.nm & ".png")
   end if
   
-  q = q - gRenderCameraTilePos.locH
-  c = c - gRenderCameraTilePos.locV
   
   
   
@@ -990,7 +988,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
         
         repeat with dir in [point(-1, 0), point(0, -1), point(1, 0), point(0, 1)] then
           type dir: point
-          if [0,6].getPos(afaMvLvlEdit(point(q,c)+dir+gRenderCameraTilePos, 1))<>0 then
+          if [0,6].getPos(afaMvLvlEdit(point(q,c)+dir, 1))<>0 then
             exit repeat
           else
             rnd = rnd + 1
@@ -1003,7 +1001,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
       
       if tl.tags.getPos("ramp")<> 0 then
         rnd = 2
-        if (afaMvLvlEdit(point(q,c)+gRenderCameraTilePos, 1)=3) then
+        if (afaMvLvlEdit(point(q,c), 1)=3) then
           rnd = 1
         end if
       end if
@@ -1208,7 +1206,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
         rnd = 1
         
         repeat with dir in [point(-1, 0), point(0, -1), point(1, 0), point(0, 1)] then
-          if [0,6].getPos(afaMvLvlEdit(point(q,c) + dir + gRenderCameraTilePos, 1)) <> 0 then
+          if [0,6].getPos(afaMvLvlEdit(point(q,c) + dir , 1)) <> 0 then
             exit repeat
           else
             rnd = rnd + 1
@@ -1221,7 +1219,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
       
       if tl.tags.getPos("ramp") <> 0 then
         rnd = 2
-        if (afaMvLvlEdit(point(q,c) + gRenderCameraTilePos, 1) = 3) then
+        if (afaMvLvlEdit(point(q,c), 1) = 3) then
           rnd = 1
         end if
       end if
@@ -1318,7 +1316,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
         if (dt.count > 2)then
           if (dt[3] <> "NONE") then
             ps1: point = giveMiddleOfTile(point(q,c))+point(10.1,10.1)
-            ps2: point = giveMiddleOfTile(dt[3]-gRenderCameraTilePos)+point(10.1,10.1)
+            ps2: point = giveMiddleOfTile(dt[3])+point(10.1,10.1)
             
             if l = 1 then
               dp = 2
@@ -1727,7 +1725,7 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
           end if
         end repeat
         
-        actualTlPs = point(q,c) + gRenderCameraTilePos
+        actualTlPs = point(q,c) 
         type actualrlps: point
         
         
@@ -1752,13 +1750,13 @@ on drawATileTile(q: number, c: number, l: number, tl, frntImg: image, dt: list)
         end if
         
         if(prevIsFloor)then
-          frntImg = drawATileTile(q+gRenderCameraTilePos.locH-4,c+gRenderCameraTilePos.locV-1,l, gTiles[tileCat].tls[13], frntImg)
+          frntImg = drawATileTile(q-4,c-1,l, gTiles[tileCat].tls[13], frntImg)
         else 
-          frntImg = drawATileTile(q+gRenderCameraTilePos.locH-3,c+gRenderCameraTilePos.locV-1,l, gTiles[tileCat].tls[7], frntImg)
+          frntImg = drawATileTile(q-3,c-1,l, gTiles[tileCat].tls[7], frntImg)
         end if
         
         if(nextIsFloor = 0)then
-          frntImg = drawATileTile(q+gRenderCameraTilePos.locH+4,c+gRenderCameraTilePos.locV-1,l, gTiles[tileCat].tls[8], frntImg)
+          frntImg = drawATileTile(q+4,c-1,l, gTiles[tileCat].tls[8], frntImg)
         end if
         
         --  drawATileTile(q-4, c-1, l, [#nm:"Temple Stone Wedge", #sz:point(2,1), #specs:[], #specs2:void, #tp:"voxelStruct", #repeatL:[1,1,1,1,6], #bfTiles:0, #rnd:1, #ptPos:0, #tags:[]], frntImg)
@@ -2166,7 +2164,7 @@ on drawPipeTypeTile(mat, tl, layer)
           
       end case
       if mat = "small Pipes" then
-        member("layer"&string( ((layer-1)*10)+5 )).image.copyPixels(member("frameWork").image, rect((tl.locH-1-gRenderCameraTilePos.locH)*20, (tl.locV-1-gRenderCameraTilePos.locV)*20, (tl.locH-gRenderCameraTilePos.locH)*20, (tl.locV-gRenderCameraTilePos.locV)*20), rect(0,0,20,20), {#ink:36})
+        member("layer"&string( ((layer-1)*10)+5 )).image.copyPixels(member("frameWork").image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20), rect(0,0,20,20), {#ink:36})
       end if
       
     3:
@@ -2208,7 +2206,7 @@ on drawPipeTypeTile(mat, tl, layer)
     rct = rect((gtPos.locH-1)*20, (gtPos.locV-1)*20, gtPos.locH*20, gtPos.locV*20)
     repeat with d = startLayer to startLayer + 1 then
       
-      member("layer"&string(d)).image.copyPixels(member(mem).image, rect((tl.locH-1-gRenderCameraTilePos.locH)*20, (tl.locV-1-gRenderCameraTilePos.locV)*20, (tl.locH-gRenderCameraTilePos.locH)*20, (tl.locV-gRenderCameraTilePos.locV)*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
+      member("layer"&string(d)).image.copyPixels(member(mem).image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
       --member("layer"&string(d)).image.copyPixels(member("pxl").image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20), rect(0,0,1,1))
     end repeat
   end repeat
@@ -2220,7 +2218,7 @@ on drawPipeTypeTile(mat, tl, layer)
           d = [1,11,21][layer] + random(9)-1
           gt = random(48)
           gt = rect(50*(gt-1), 0, 50*gt, 50)+rect(1,1,1,1)
-          rct = giveMiddleOfTile(tl-gRenderCameraTilePos) - point(11,11)+point(random(21), random(21))
+          rct = giveMiddleOfTile(tl) - point(11,11)+point(random(21), random(21))
           rct = rect(rct-point(25,25), rct+point(25,25))
           member("layer"&string(d)).image.copyPixels(member("assortedTrash").image, rotateToQuad(rct, random(360)), gt, {#color:[color(255,0,0), color(0,255,0), color(0,0,255)][random(3)], #ink:36})
         end repeat
@@ -2233,7 +2231,7 @@ end
 
 
 on drawWVTypeTile(mat, tl, layer)
-  pos = giveMiddleOfTile(tl - gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   img = mat & "WVTile"
   xPos = (afaMvLvlEdit(tl, layer) - 1) * 20
   lr = (layer - 1) * 10
@@ -2378,17 +2376,17 @@ on drawRockTypeTile(mat, tl, layer, trBool)
   rct = rect((gtPos.locH-1)*20, (gtPos.locV-1)*20, gtPos.locH*20, gtPos.locV*20)
   if (trBool) then
     repeat with rg = 1 to 4 then
-      member("layer"&string(d+rg)).image.copyPixels(member(mem).image, rect((tl.locH-1-gRenderCameraTilePos.locH)*20, (tl.locV-1-gRenderCameraTilePos.locV)*20, (tl.locH-gRenderCameraTilePos.locH)*20, (tl.locV-gRenderCameraTilePos.locV)*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
+      member("layer"&string(d+rg)).image.copyPixels(member(mem).image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
     end repeat
   else
     repeat with rg = 0 to 4 then
-      member("layer"&string(d+rg)).image.copyPixels(member(mem).image, rect((tl.locH-1-gRenderCameraTilePos.locH)*20, (tl.locV-1-gRenderCameraTilePos.locV)*20, (tl.locH-gRenderCameraTilePos.locH)*20, (tl.locV-gRenderCameraTilePos.locV)*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
+      member("layer"&string(d+rg)).image.copyPixels(member(mem).image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
     end repeat
   end if
   gtPos.locV = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32][random(16)]
   rct = rect((gtPos.locH-1)*20, (gtPos.locV-1)*20, gtPos.locH*20, gtPos.locV*20)
   repeat with rd = 5 to 9 then
-    member("layer"&string(d+rd)).image.copyPixels(member(mem).image, rect((tl.locH-1-gRenderCameraTilePos.locH)*20, (tl.locV-1-gRenderCameraTilePos.locV)*20, (tl.locH-gRenderCameraTilePos.locH)*20, (tl.locV-gRenderCameraTilePos.locV)*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
+    member("layer"&string(d+rd)).image.copyPixels(member(mem).image, rect((tl.locH-1)*20, (tl.locV-1)*20, tl.locH*20, tl.locV*20)+rect(-10,-10,10,10), rct+rect(1,1,1,1)+rect(-10,-10,10,10), {#ink:36})
   end repeat
   the randomSeed = savSeed
 end
@@ -2432,7 +2430,7 @@ on drawLargeTrashTypeTile(mat, tl, layer, frntImg)
       dp = restrict(((layer - 1)*10) + random(random(10))-1+random(3), 0, 29)
       
       
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+      pos = giveMiddleOfTile(tl)
       pos = pos + point(-11+random(21), -11+random(21))
       
       if (gTrashPropOptions.count <> 0)then
@@ -2448,7 +2446,7 @@ on drawLargeTrashTypeTile(mat, tl, layer, frntImg)
   
   if(distanceToAir > 2)then
     dp = ((layer - 1)*10)
-    pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+    pos = giveMiddleOfTile(tl)
     
     if(random(5) <= distanceToAir)then
       member("layer"&string(dp)).image.copyPixels(member("pxl").image, rect(pos.locH-10,pos.locV-10,pos.locH+10,pos.locV+10), rect(0,0,1,1), {#color:color(255,0,0)})
@@ -2459,7 +2457,7 @@ on drawLargeTrashTypeTile(mat, tl, layer, frntImg)
     
     repeat with q = 1 to distanceToAir then
       dp = ((layer - 1)*10) + random(10)-1
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+      pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
       var = random(14)
       rct = rect(pos, pos) + rect(-30, -30, 30, 30)
       member("layer"&string(dp)).image.copyPixels(member("bigJunk").image, rotateToQuad(rct, random(360)), rect((var-1)*60, 0, var*60, 60)+rect(0,1,0,1), {#ink:36})
@@ -2524,7 +2522,7 @@ on drawRoughRockTile(mat, tl, layer, frntImg)
   
   if(distanceToAir > 2)then
     dp = ((layer - 1)*10)
-    pos = giveMiddleOfTile(tl-gRenderCameraTilePos) 
+    pos = giveMiddleOfTile(tl) 
     if(random(5) <= distanceToAir)then
       member("layer"&string(dp)).image.copyPixels(member("pxl").image, rect(pos.locH-10,pos.locV-10,pos.locH+10,pos.locV+10), rect(0,0,1,1), {#color:color(255,0,0)})
       var = random(intOp)
@@ -2533,14 +2531,14 @@ on drawRoughRockTile(mat, tl, layer, frntImg)
       frntImg.copyPixels(member(imgR).image, rotateToQuad(rct, random(360)), rect((var-1)*szR*2, 0, var*szR*2, szR*2)+rect(0,1,0,1), {#ink:36})
     end if
     dp = ((layer - 1)*10)
-    pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+    pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
     var = random(intOp)
     fat = [1,1.05,1.1][random(3)]
     rct = rect(pos, pos) + rect(-szR*fat, -szR*fat, szR*fat, szR*fat)
     member("layer"&string(dp)).image.copyPixels(member(imgR).image, rotateToQuad(rct, random(360)), rect((var-1)*szR*2, 0, var*szR*2, szR*2)+rect(0,1,0,1), {#ink:36})
     repeat with q = 1 to distanceToAir then
       dp = ((layer - 1)*10) + random(10)-1
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+      pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
       var = random(intOp)
       fat = [1,1.05,1.1][random(3)]
       rct = rect(pos, pos) + rect(-szR*fat, -szR*fat, szR*fat, szR*fat)
@@ -2549,7 +2547,7 @@ on drawRoughRockTile(mat, tl, layer, frntImg)
     
     if mat = "Sandy Dirt" and random(2) = 1 then
       dp = ((layer - 1)*10)
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+      pos = giveMiddleOfTile(tl)
       if(random(5) <= distanceToAir)then
         member("layer"&string(dp)).image.copyPixels(member("pxl").image, rect(pos.locH-10,pos.locV-10,pos.locH+10,pos.locV+10), rect(0,0,1,1), {#color:color(255,0,0)})
         var = random(intOp)
@@ -2559,7 +2557,7 @@ on drawRoughRockTile(mat, tl, layer, frntImg)
       end if   
       repeat with q = 1 to distanceToAir then
         dp = ((layer - 1)*10) + random(10)-1
-        pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+        pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
         var = random(intOp)
         fat = [1,1.05,1.1][random(3)]
         rct = rect(pos, pos) + rect(-szR*fat, -szR*fat, szR*fat, szR*fat)
@@ -2605,7 +2603,7 @@ on drawSandyTypeTile(mat, tl, layer, frntImg, vars, szList, hAddList, slopeSz)
     end if
     repeat with rep = 1 to fatFac + 4
       dp = ((layer - 1) * 10)
-      pos = giveMiddleOfTile(tl - gRenderCameraTilePos) 
+      pos = giveMiddleOfTile(tl) 
       if (random(5) <= distanceToAir) then
         var = random(vars)
         fatSide = szList[fatFac]
@@ -2618,7 +2616,7 @@ on drawSandyTypeTile(mat, tl, layer, frntImg, vars, szList, hAddList, slopeSz)
         dp = ((layer - 1) * 10) + random(10) - 1
         fatD = fatFac * 3
         fatDD = fatD * 2 - 1
-        pos = giveMiddleOfTile(tl - gRenderCameraTilePos) + point(-fatD + random(fatDD), -fatD + random(fatDD))
+        pos = giveMiddleOfTile(tl) + point(-fatD + random(fatDD), -fatD + random(fatDD))
         var = random(vars)
         fatSide = szList[fatFac]
         fatAdd = hAddList[fatFac]
@@ -2632,7 +2630,7 @@ on drawSandyTypeTile(mat, tl, layer, frntImg, vars, szList, hAddList, slopeSz)
     repeat with rep = 1 to szList.count + 2
       repeat with dp = lr + 5 to lr + 9
         ptAdd = point(random(8) - random(8), -10)
-        pos = giveMiddleOfTile(tl - gRenderCameraTilePos) + point(-2 + random(3), -2 + random(3)) + ptAdd
+        pos = giveMiddleOfTile(tl) + point(-2 + random(3), -2 + random(3)) + ptAdd
         var = random(vars)
         rn = random(2)
         fatSide = szList[[szList.count, szList.count - 1][rn]]
@@ -2656,7 +2654,7 @@ on drawSandyTypeTile(mat, tl, layer, frntImg, vars, szList, hAddList, slopeSz)
         5:
           ptAdd = point(4, -4)
       end case
-      pos = giveMiddleOfTile(tl - gRenderCameraTilePos) + point(-2 + random(3), -2 + random(3)) + ptAdd
+      pos = giveMiddleOfTile(tl) + point(-2 + random(3), -2 + random(3)) + ptAdd
       var = block - 1
       fatAdd = hAddList[hAddList.count] + szList[szList.count]
       halfSide = slopeSz / 2
@@ -2698,7 +2696,7 @@ on drawMegaTrashTypeTile(mat, tl, layer, frntImg)
     global gMegaTrash, gProps   
     repeat with q = 1 to distanceToAir + random(2) - 1 then
       dp = restrict(((layer - 1)*10) + random(random(10))-1+random(3), 0, 29)
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+      pos = giveMiddleOfTile(tl)
       pos = pos + point(-11+random(21), -11+random(21))
       
       if (gMegaTrash.count <> 0)then
@@ -2712,7 +2710,7 @@ on drawMegaTrashTypeTile(mat, tl, layer, frntImg)
   
   if(distanceToAir > 2)then
     dp = ((layer - 1)*10)
-    pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+    pos = giveMiddleOfTile(tl)
     
     if(random(5) <= distanceToAir)then
       member("layer"&string(dp)).image.copyPixels(member("pxl").image, rect(pos.locH-10,pos.locV-10,pos.locH+10,pos.locV+10), rect(0,0,1,1), {#color:color(255,0,0)})
@@ -2723,7 +2721,7 @@ on drawMegaTrashTypeTile(mat, tl, layer, frntImg)
     
     repeat with q = 1 to distanceToAir then
       dp = ((layer - 1)*10) + random(10)-1
-      pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+      pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
       var = random(14)
       rct = rect(pos, pos) + rect(-30, -30, 30, 30)
       member("layer"&string(dp)).image.copyPixels(member("bigJunk").image, rotateToQuad(rct, random(360)), rect((var-1)*60, 0, var*60, 60)+rect(0,1,0,1), {#ink:36})
@@ -2739,7 +2737,7 @@ on drawDirtTypeTile(mat, tl, layer, frntImg)
   the randomSeed = seedForTile(tl, gLOprops.tileSeed + layer)
   
   dp = ((layer - 1)*10)
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   
   optOut = false
   if(layer > 1)then
@@ -2784,7 +2782,7 @@ on drawDirtTypeTile(mat, tl, layer, frntImg)
       end if
       repeat with q = 1 to amnt then
         dp = ((layer - 1)*10) + random(10)-1
-        pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21))
+        pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21))
         var = random(4)
         drawDirtClot(pos, dp, var, layer, distanceToAir)
       end repeat
@@ -2798,7 +2796,7 @@ on drawDirtTypeTile(mat, tl, layer, frntImg)
                 else
                   dpAdd = 2+random(8)
                 end if
-                pos = giveMiddleOfTile(tl-gRenderCameraTilePos) + point(-11+random(21), -11+random(21)) + dir * dist * dist * dpAdd * random(85) * 0.01
+                pos = giveMiddleOfTile(tl) + point(-11+random(21), -11+random(21)) + dir * dist * dist * dpAdd * random(85) * 0.01
                 var = random(4)
                 drawDirtClot(pos, ((layer - 1)*10) + dpAdd, var, layer, distanceToAir)
               end repeat
@@ -2827,7 +2825,7 @@ on drawDirtClot(pos, dp, var, layer, distanceToAir)
   
   
   -- pos2 = giveGridPos(pos + point(-10, -10))
-  if((random(6)>distanceToAir)and(random(3)=1))or((afaMvLvlEdit(giveGridPos(pos + point(-10, -10))+gRenderCameraTilePos, layer)<>1)and((afaMvLvlEdit(giveGridPos(pos + point(10, 10))+gRenderCameraTilePos, layer)=1)) or (layer = 2))then
+  if((random(6)>distanceToAir)and(random(3)=1))or((afaMvLvlEdit(giveGridPos(pos + point(-10, -10)), layer)<>1)and((afaMvLvlEdit(giveGridPos(pos + point(10, 10)), layer)=1)) or (layer = 2))then
     repeat with d = 0 to 2 then
       sz = 2 + (szAdd*0.5) + d*2
       pstDp = restrict(dp-1+d, 0, 29)
@@ -2836,7 +2834,7 @@ on drawDirtClot(pos, dp, var, layer, distanceToAir)
     end repeat
   end if
   
-  if((random(6)>distanceToAir)and(random(3)=1))or((afaMvLvlEdit(giveGridPos(pos + point(10, 10))+gRenderCameraTilePos, layer)<>1)and((afaMvLvlEdit(giveGridPos(pos + point(-10, -10))+gRenderCameraTilePos, layer)=1)) or (layer = 2))then
+  if((random(6)>distanceToAir)and(random(3)=1))or((afaMvLvlEdit(giveGridPos(pos + point(10, 10)), layer)<>1)and((afaMvLvlEdit(giveGridPos(pos + point(-10, -10)), layer)=1)) or (layer = 2))then
     repeat with d = 0 to 2 then
       sz = 2 + (szAdd*0.5) + d*2
       pstDp = restrict(dp-1+d, 0, 29)
@@ -2895,7 +2893,7 @@ on drawCeramicTypeTile(mat, tl, layer, frntImg)
   chaos = chaos * 0.01
   
   dp = ((layer - 1)*10)
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   clr = color(239, 234, 224)
   
   
@@ -3142,7 +3140,7 @@ on drawCeramicATypeTile(mat, tl, layer, frntImg)
   chaos = chaos * 0.01
   
   dp = ((layer - 1)*10)
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   clr = color(239, 234, 224)
   
   
@@ -3367,7 +3365,7 @@ on drawCeramicBTypeTile(mat, tl, layer, frntImg)
   chaos = chaos * 0.01
   
   dp = ((layer - 1)*10)
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   clr = color(239, 234, 224)
   
   
@@ -3553,7 +3551,7 @@ on drawDPTTile(mat, tl, layer, frntImg)
   global gLOprops
   the randomSeed = seedForTile(tl, gLOprops.tileSeed + layer)
   
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   pstLr = DPStartLayerOfTile(tl, layer)
   --For Dry's mat
   if(mat = "Shallow Circuits") or (mat = "Shallow Dense Pipes") then
@@ -3650,7 +3648,7 @@ on drawRandomPipesMat(mat, tl, layer, frntImg)
   global gLOprops
   the randomSeed = seedForTile(tl, gLOprops.tileSeed + layer)
   
-  pos = giveMiddleOfTile(tl-gRenderCameraTilePos)
+  pos = giveMiddleOfTile(tl)
   
   if(afaMvLvlEdit(tl, layer) > 1)then
     a = afaMvLvlEdit(tl, layer)
@@ -3874,7 +3872,7 @@ on renderTileMaterial(layer, material, frntImg)
             tlsOrdered.add([random(gLOprops.size.loch + gLOprops.size.locV), point(q, c)])
           else if (gDRMatFixes) or ((material <> "Tiled Stone") and (material <> "Chaotic Stone") and (material <> "Random Machines") and (material <> "3DBricks")) then
             tlsOrdered.add([random(gLOprops.size.loch + gLOprops.size.locV), point(q, c)])
-          else if (point(q, c).inside(rect(gRenderCameraTilePos, gRenderCameraTilePos + point(100, 60)))) then
+          else
             frntImg = drawATileMaterial(q, c, layer, "Standard", frntImg)
           end if
         end if
@@ -3938,9 +3936,7 @@ on renderTileMaterial(layer, material, frntImg)
             hts = hts + (tls.getPos(tl+dir)>0)*(delL.getPos(tl+dir)=0)
           end repeat
           if hts = 3 then
-            if(tl.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60)))) then
-              frntImg = drawATileTile(tl.loch,tl.locV,layer, gTiles[stCat].tls[2], frntImg)
-            end if
+            frntImg = drawATileTile(tl.loch,tl.locV,layer, gTiles[stCat].tls[2], frntImg)
             repeat with dir in [point(1,0), point(0,1), point(1,1)] then
               delL.add(tl+dir)
             end repeat
@@ -3959,9 +3955,7 @@ on renderTileMaterial(layer, material, frntImg)
       repeat while tls.count > 0 then
         the randomSeed  = gLOprops.tileSeed + tls.count
         tl = tls[random(tls.count)]
-        if(tl.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60)))) then
-          frntImg = drawATileTile(tl.locH,tl.locV,layer, gTiles[stCat].tls[1], frntImg)
-        end if
+        frntImg = drawATileTile(tl.locH,tl.locV,layer, gTiles[stCat].tls[1], frntImg)
         tls.deleteOne(tl)
       end repeat
       the randomSeed  = savSeed
@@ -4150,9 +4144,7 @@ on renderTileMaterial(layer, material, frntImg)
             
             if(legalToPlace)then
               rootPos: point = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
-              end if
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
@@ -4279,9 +4271,7 @@ on renderTileMaterial(layer, material, frntImg)
             
             if(legalToPlace)then
               rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
-              end if
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
@@ -4407,9 +4397,7 @@ on renderTileMaterial(layer, material, frntImg)
             
             if(legalToPlace)then
               rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
-              end if
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
@@ -4536,9 +4524,7 @@ on renderTileMaterial(layer, material, frntImg)
             
             if(legalToPlace)then
               rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
-              end if
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
@@ -4660,9 +4646,8 @@ on renderTileMaterial(layer, material, frntImg)
             end if
             if (legalToPlace) then
               rootPos = tl + point(((testTile.sz.locH.float / 2.0) + 0.4999).integer - 1, ((testTile.sz.locV.float / 2.0) + 0.4999).integer - 1)
-              if (rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60)))) then
-                frntImg = drawATileTile(rootPos.locH, rootPos.locV, layer, testTile, frntImg) 
-              end if
+              frntImg = drawATileTile(rootPos.locH, rootPos.locV, layer, testTile, frntImg) 
+              
               repeat with a = 0 to testTile.sz.locH - 1
                 repeat with b = 0 to testTile.sz.locV - 1
                   spec = testTile.specs[(b + 1) + (a * testTile.sz.locV)]
@@ -4800,9 +4785,9 @@ on renderTileMaterial(layer, material, frntImg)
             
             if(legalToPlace)then
               rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
-              end if
+              
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg)
+              
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
@@ -5133,9 +5118,9 @@ on renderTileMaterial(layer, material, frntImg)
           if legalToPlace then
             -- Place tile
             rootPos: point = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-            if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-              frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg, [])
-            end if
+            
+            frntImg = drawATileTile(rootPos.loch,rootPos.locV,layer,testTile, frntImg, [])
+            
             
             -- Remove tile ref
             repeat with a = 0 to testTile.sz.locH-1 then
@@ -5256,13 +5241,13 @@ on renderHarvesterDetails(q, c, l, tl, frntImg, dt)
     armPoint = point(58, 60)
   end if
   
-  actualQ = q + gRenderCameraTilePos.locH
-  actualC = c + gRenderCameraTilePos.locV
+  actualQ = q
+  actualC = c
   lowerPart = point(0,0)
   repeat with h = actualC to gTEprops.tlMatrix[actualQ].count then
     if (gTEprops.tlMatrix[actualQ][h][l].tp = "tileHead")then
       if(gTEprops.tlMatrix[actualQ][h][l].data[2] = "Harvester Arm " & letter)then
-        lowerPart = point(q, h - gRenderCameraTilePos.locV)
+        lowerPart = point(q, h)
       end if
     end if
   end repeat
