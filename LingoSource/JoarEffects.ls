@@ -1444,14 +1444,14 @@ on applyWire(me, q, c, eftc)
       repeat with rep = 1 to 1000
         pnt.locH = startPos.locH + (-1 + 2 * dir) * rep
         pnt.locV = startPos.locV + a - (power(2.71828183, rep / a) + power(2.71828183, -rep / a)) * (a / 2.0)
-        dr = moveToPoint(lastPnt, pnt, fatness.float)
+        dr = moveToPoint(lastPnt, pnt, fatness)
         wireImg.copypixels(DRPxl, rect(pnt.locH, pnt.locV, pnt.locH + 1, lastPnt.locV + 1) + addNRct, rect(0, 0, 1, 1), {#color:color(0, 0, 0)})
         lastPnt = point(pnt.locH, pnt.locV)
         tlPos = giveGridPos(point(pnt.locH, pnt.locV)) + gRenderCameraTilePos
         if (tlPos.inside(rect(1, 1, gLOprops.size.loch + 1, gLOprops.size.locv + 1)) = 0) then
           exit repeat
         else 
-          if(myCamera = gCurrentRenderCamera)and(me.seenByCamera(myCamera, pnt + gRenderCameraTilePos)=1) then
+          if(true) then
             if (gLEprops.matrix[tlPos.locH][tlPos.locV][lr][1] = 1) then
               if (layerd.getPixel(pnt) <> DRWhite) then
                 goodStops = goodStops + 1
@@ -1585,7 +1585,7 @@ on applyChain me, q, c, eftc
           if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
             exit repeat
           else 
-            if(myCamera = gCurrentRenderCamera)and(me.seenByCamera(myCamera, pnt + gRenderCameraTilePos)=1) then
+            if(true) then
               if gLEprops.matrix[tlPos.locH][tlPos.locV][lr][1] = 1 then
                 if member("layer"&string(d)).image.getPixel(pnt) <> color(255,255,255) then
                   goodStops = goodStops + 1
