@@ -1156,7 +1156,7 @@ on applyColoredWires me, q, c, eftc
     mdPnt = giveMiddleOfTile(point(q,c))
     startPos = mdPnt+point(-11+random(21), -11+random(21))
     
-    myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
+    myCamera = me.closestCamera(startPos)
     if(myCamera = 0)then
       --exit
     end if
@@ -1200,7 +1200,7 @@ on applyColoredWires me, q, c, eftc
         if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
           exit repeat
         else 
-          if(myCamera = gCurrentRenderCamera)and(me.seenByCamera(myCamera, pnt + gRenderCameraTilePos)=1) then
+          if(true) then
             if gLEprops.matrix[tlPos.locH][tlPos.locV][lr][1] = 1 then
               if member("layer"&string(d)).image.getPixel(pnt) <> color(255,255,255) then
                 goodStops = goodStops + 1
@@ -1267,7 +1267,7 @@ on applyColoredChains me, q, c, eftc
     
     myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
     if(myCamera = 0)then
-      exit
+      --exit
     end if
     
     
@@ -1337,7 +1337,7 @@ on applyColoredChains me, q, c, eftc
           if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
             exit repeat
           else 
-            if(myCamera = gCurrentRenderCamera)and(me.seenByCamera(myCamera, pnt + gRenderCameraTilePos)=1) then
+            if(true) then
               if gLEprops.matrix[tlPos.locH][tlPos.locV][lr][1] = 1 then
                 if member("layer"&string(d)).image.getPixel(pnt) <> color(255,255,255) then
                   goodStops = goodStops + 1
@@ -1401,7 +1401,7 @@ on applyRingChains me, q, c, eftc
     
     myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
     if(myCamera = 0)then
-      exit
+      --exit
     end if
     
     
@@ -1452,7 +1452,7 @@ on applyRingChains me, q, c, eftc
           if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
             exit repeat
           else 
-            if(myCamera = gCurrentRenderCamera)and(me.seenByCamera(myCamera, pnt + gRenderCameraTilePos)=1) then
+            if(true) then
               if gLEprops.matrix[tlPos.locH][tlPos.locV][lr][1] = 1 then
                 if member("layer"&string(d)).image.getPixel(pnt) <> color(255,255,255) then
                   goodStops = goodStops + 1
