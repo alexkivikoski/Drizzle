@@ -308,7 +308,8 @@ on setUpLayer(layer)
           
         "ceramicType":
           repeat with tl in drawMaterials[q][2] then
-            if (point(tl[2], tl[3]).inside(rect(gRenderCameraTilePos, gRenderCameraTilePos + point(100, 60)))) and (gDRMatFixes = FALSE) and (afaMvLvlEdit(point(tl[2], tl[3]), layer) <> 1) then
+            
+            if (gDRMatFixes = FALSE) and (afaMvLvlEdit(point(tl[2], tl[3]), layer) <> 1) then
               frntImg = drawATileMaterial(tl[2], tl[3], layer, "Standard", frntImg)
             else if afaMvLvlEdit(point(tl[2], tl[3]), layer)=1 or afaMvLvlEdit(point(tl[2], tl[3]), layer)=2 or afaMvLvlEdit(point(tl[2], tl[3]), layer)=3 or afaMvLvlEdit(point(tl[2], tl[3]), layer)=4 or afaMvLvlEdit(point(tl[2], tl[3]), layer)=5 or afaMvLvlEdit(point(tl[2], tl[3]), layer)=6 then
               drawCeramicTypeTile(drawMaterials[q][1], point(tl[2], tl[3]), layer, frntImg)
