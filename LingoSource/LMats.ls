@@ -161,7 +161,7 @@ on LRenderTileMaterial(l: number, nm: string, frntImg)
               -- Place tile
               rootPos: point = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
               
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,l,testTile, frntImg, []) -- array argument required for chain holders. do not remove it!
+              frntImg = drawATileTile(rootPos.loch,rootPos.locV,l,testTile, frntImg, []) -- array argument required for chain holders. do not remove it!
               
               
               -- Remove tile ref
@@ -235,7 +235,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
         if (colored) or (effectColorA) or (effectColorB) then
           gradRect = rect(size.locH * 20, 0, size.locH * 20, 0)
         end if
-        pstRect = rect((q - 1) * 20, (c - 1) * 20, q * 20, c * 20) - rect(gRenderCameraTilePos, gRenderCameraTilePos) * 20
+        pstRect = rect((q - 1) * 20, (c - 1) * 20, q * 20, c * 20) 
         case LEMatrixT of
           1:
             d = -1
@@ -274,7 +274,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
               2:
                 rct = [point(rct.right, rct.bottom), point(rct.right, rct.bottom), point(rct.left, rct.top), point(rct.right, rct.top)]
             end case
-            rct = rct - [gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos, gRenderCameraTilePos] * 20
+
             d = -1
             repeat with ps = 1 to mText.repeatL.count
               gtRect = bsRect + rect(0, size.locV * 20 * (ps - 1), 0, size.locV * 20 * (ps - 1))
@@ -309,7 +309,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
             end repeat
           6:
             if (mText.tags.getPos("textureOnFloor") > 0) then
-              rct = rect((q - 1) * 20, (c - 1) * 20 + 10, q * 20, c * 20) - rect(gRenderCameraTilePos, gRenderCameraTilePos) * 20
+              rct = rect((q - 1) * 20, (c - 1) * 20 + 10, q * 20, c * 20) 
               d = -1
               repeat with ps = 1 to mText.repeatL.count
                 gtRect = bsRect + rect(0, size.locV * 20 * (ps - 1), 0, size.locV * 20 * (ps - 1))
@@ -349,7 +349,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
         1:
           if (matTl.findPos(#block) <> VOID) then
             fl = matTl.block
-            rct2 = rect((q - 1) * 20 - 5, (c - 1) * 20 - 5, q * 20 + 5, c * 20 + 5) - rect(gRenderCameraTilePos, gRenderCameraTilePos) * 20
+            rct2 = rect((q - 1) * 20 - 5, (c - 1) * 20 - 5, q * 20 + 5, c * 20 + 5) 
             colored = (fl.tags.getPos("colored") > 0)
             if (colored) then
               gAnyDecals = 1
@@ -461,7 +461,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
             slp = gLEProps.matrix[q][c][l][1]
             askDirs = [0, [point(-1, 0), point(0, 1)], [point(0, 1), point(1, 0)], [point(-1, 0), point(0, -1)], [point(0, -1), point(1, 0)]]
             myAskDirs = askDirs[slp]
-            pstRect = rect((q - 1) * 20 - 5, (c - 1) * 20 - 5, q * 20 + 5, c * 20 + 5) - rect(gRenderCameraTilePos, gRenderCameraTilePos) * 20
+            pstRect = rect((q - 1) * 20 - 5, (c - 1) * 20 - 5, q * 20 + 5, c * 20 + 5) 
             if (colored) or (effectColorA) or (effectColorB) then
               gradRect = rect(120 * tlRnd, 0, 120 * tlRnd, 0)
             end if
@@ -515,7 +515,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
             effectColorA = (fl.tags.getPos("effectColorA") > 0)
             effectColorB = (fl.tags.getPos("effectColorB") > 0)
             vbf = 20 * fl.bfTiles
-            pstRect = rect((q - 1) * 20 - vbf, (c - 1) * 20 - vbf, q * 20 + vbf, c * 20 + vbf) - rect(gRenderCameraTilePos, gRenderCameraTilePos) * 20
+            pstRect = rect((q - 1) * 20 - vbf, (c - 1) * 20 - vbf, q * 20 + vbf, c * 20 + vbf) 
             bfCal = 20 + 40 * fl.bfTiles
             bsRect = rect(0, 1, bfCal, bfCal + 1)
             bsRect = bsRect + rect(bsRect.width * rnd, 0, bsRect.width * rnd, 0)
@@ -634,7 +634,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
         repeat with d = lrm110 to lrm110 + 9
           if (pipeDepths.getPos(d - lrm110) > 0) then
             rct = rect((gtPos.locH - 1) * 20 - 10, (gtPos.locV - 1) * 20 - 9, gtPos.locH * 20 + 10, gtPos.locV * 20 + 11)
-            realRect = rect((q - 1 - gRenderCameraTilePos.locH) * 20 - 10, (c - 1 - gRenderCameraTilePos.locV) * 20 - 10, (q - gRenderCameraTilePos.locH) * 20 + 10, (c - gRenderCameraTilePos.locV) * 20 + 10)
+            realRect = rect((q - 1) * 20 - 10, (c - 1) * 20 - 10, q  * 20 + 10, c  * 20 + 10)
             member("layer" & string(d)).image.copyPixels(matImg, realRect, rct, {#ink:36})
             if (effectColorA) then
               member("gradientA" & string(d)).image.copyPixels(matImg, realRect, rct + rect(840, 0, 840, 0), {#ink:39})
@@ -683,7 +683,7 @@ on LDrawATileMaterial(q, c, l, nm) --frntImg,
           the randomSeed = gLOprops.tileSeed + l + q + c * gLEprops.matrix.count
           clrs = [color(255, 0, 0), color(0, 255, 0), color(0, 0, 255)]
           trashLr = [0, 10, 20][l]
-          midTlTr = giveMiddleOfTile(qcp - gRenderCameraTilePos)
+          midTlTr = giveMiddleOfTile(qcp)
           repeat with q = 1 to (2 + (random(trashDensity * 2) - 1) + trashDensity)
             layerOfTrash = random(10) - 1
             if (trashDepths.getPos(layerOfTrash) > 0) then
