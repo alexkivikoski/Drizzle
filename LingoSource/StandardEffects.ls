@@ -1,8 +1,8 @@
 global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, effSide, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
 
 on ApplyCustomEffect(me, q, c, effectr, efname)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   mtrx = effectr.mtrx
   
   -- Find the effect
@@ -337,7 +337,7 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
             end if
             
             -- Stop once we hit solid ground
-            tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+            tlPos = giveGridPos(pnt)
             
             if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
               drawQuad = 0
@@ -779,8 +779,8 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
 end
 
 on giveGroundPosCustom q, c, l, t
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   mdPnt = giveMiddleOfTile(point(q,c))
   pnt = mdPnt
   case t of
@@ -866,8 +866,8 @@ end
 
 
 on applyStandardErosion me, q, c, eftc, tp, effectr
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   affop = effectr.affectOpenAreas
   fc = affop + (1.0-affop)* (     solidAfaMv(point(q2,c2), 3)   )
   
@@ -1976,8 +1976,8 @@ end
 
 
 on applyStandardPlant me, q, c, eftc, tp
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   amount = 17
   case tp of
@@ -2439,8 +2439,8 @@ on applyStandardPlant me, q, c, eftc, tp
 end
 
 on giveGroundPos q, c,l
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   mdPnt = giveMiddleOfTile(point(q,c))
   pnt = mdPnt + point(-11+random(21), 10)
   if (gLEprops.matrix[q2][c2][l][1]=3) then
@@ -2453,8 +2453,8 @@ end
 
 
 on apply3Dsprawler me, q, c, effc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   big = 0
   if (c > 1) and ((c2 - 1) > 0) then
@@ -2573,7 +2573,7 @@ on apply3Dsprawler me, q, c, effc
         aimPnt = generalDir*sts.generalDir+degToVec(random(360))*sts.randomDir + point(0, tiredNess*0.01)
         
         repeat with dir in [point(-1,0), point(-1,-1), point(0,-1), point(1,-1), point(1,0), point(1,1), point(0,1), point(-1,1)] then
-          if (afaMvLvlEdit(giveGridPos(lstPos)+dir+gRenderCameraTilePos, ((brLr/10.0)-0.4999).integer+1)=1) then
+          if (afaMvLvlEdit(giveGridPos(lstPos)+dir, ((brLr/10.0)-0.4999).integer+1)=1) then
             aimPnt = aimPnt - dir*avoidWalls
             avoidWalls = restrict(avoidWalls - 0.06, 0.2, 2)
             step = step + (effc <> "Fungus Tree")
@@ -2591,7 +2591,7 @@ on apply3Dsprawler me, q, c, effc
         
         smllst = lrRange[1]
         if ((lstLayer/10.0)-0.4999).integer+1 > 1 then
-          if (afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1-1)=1) then
+          if (afaMvLvlEdit(giveGridPos(pos), ((lstLayer/10.0)-0.4999).integer+1-1)=1) then
             wall = ((lstLayer/10.0)-0.4999).integer*10
             if wall > 0 then
               wall = wall - 1 
@@ -2602,7 +2602,7 @@ on apply3Dsprawler me, q, c, effc
         
         bggst = lrRange[2]
         if ((lstLayer/10.0)-0.4999).integer+1 < 3 then
-          if (afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1+1)=1) then
+          if (afaMvLvlEdit(giveGridPos(pos), ((lstLayer/10.0)-0.4999).integer+1+1)=1) then
             wall = ((restrict(lstLayer, 1, 29)/10.0)+0.4999).integer*10 -1
             bggst = restrict(bggst, 0, wall)
           end if
@@ -2811,8 +2811,8 @@ end
 
 
 on applyInverse3Dsprawler me, q, c, effc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   big = 0
   if (c > 1) and ((c2 - 1) > 0) then
@@ -2924,7 +2924,7 @@ on applyInverse3Dsprawler me, q, c, effc
         aimPnt = generalDir*sts.generalDir+degToVec(random(360))*sts.randomDir - point(0, tiredNess*0.01)
         
         repeat with dir in [point(-1,0), point(-1,-1), point(0,-1), point(1,-1), point(1,0), point(1,1), point(0,1), point(-1,1)] then
-          if (afaMvLvlEdit(giveGridPos(lstPos)+dir+gRenderCameraTilePos, ((brLr/10.0)-0.4999).integer+1)=1) then
+          if (afaMvLvlEdit(giveGridPos(lstPos)+dir, ((brLr/10.0)-0.4999).integer+1)=1) then
             aimPnt = aimPnt - dir*avoidWalls
             avoidWalls = restrict(avoidWalls - 0.06, 0.2, 2)
             step = step + (effc <> "Fungus Roots")
@@ -2942,7 +2942,7 @@ on applyInverse3Dsprawler me, q, c, effc
         
         smllst = lrRange[1]
         if ((lstLayer/10.0)-0.4999).integer+1 > 1 then
-          if (afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1-1)=1) then
+          if (afaMvLvlEdit(giveGridPos(pos), ((lstLayer/10.0)-0.4999).integer+1-1)=1) then
             wall = ((lstLayer/10.0)-0.4999).integer*10
             if wall > 0 then
               wall = wall - 1 
@@ -2953,7 +2953,7 @@ on applyInverse3Dsprawler me, q, c, effc
         
         bggst = lrRange[2]
         if ((lstLayer/10.0)-0.4999).integer+1 < 3 then
-          if (afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1+1)=1) then
+          if (afaMvLvlEdit(giveGridPos(pos), ((lstLayer/10.0)-0.4999).integer+1+1)=1) then
             wall = ((restrict(lstLayer, 1, 29)/10.0)+0.4999).integer*10 -1
             bggst = restrict(bggst, 0, wall)
           end if

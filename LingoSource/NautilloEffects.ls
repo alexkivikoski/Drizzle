@@ -2,8 +2,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 
 on ApplyFuzzyGrower(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -39,7 +39,7 @@ on ApplyFuzzyGrower(me, q, c)
       if (searchBase > 0) then
         moveDir = point(0, 0)
         repeat with tst in [point(-1, 0), point(1, 0), point(1, 1), point(0, 1), point(-1, 1)]
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if (tstPnt.locH > 0) and (tstPnt.locH < gLOprops.size.locH - 1) and (tstPnt.locV > 0) and (tstPnt.locV < gLOprops.size.locV - 1) then
             moveDir = moveDir + tst * gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -79,7 +79,7 @@ on ApplyFuzzyGrower(me, q, c)
         copyPixelsToEffectColor(gdLayer, d, qd, "softBrush1", member("softBrush1").image.rect, 0.5, blnd2)
         blnd2 = blnd2 - 0.15
       end if
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -104,8 +104,8 @@ end
 
 
 on ApplyHorrorGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -151,7 +151,7 @@ on ApplyHorrorGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -198,7 +198,7 @@ on ApplyHorrorGrower me, q, c, eftc
         blnd2 = blnd2 - 0.09
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -224,8 +224,8 @@ end
 
 
 on ApplyMeatGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -306,7 +306,7 @@ on ApplyMeatGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -334,8 +334,8 @@ end
 
 
 on ApplyLeafGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -382,7 +382,7 @@ on ApplyLeafGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -429,7 +429,7 @@ on ApplyLeafGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -454,8 +454,8 @@ on ApplyLeafGrower me, q, c, eftc
 end
 
 on ApplyCoralGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -501,7 +501,7 @@ on ApplyCoralGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -547,7 +547,7 @@ on ApplyCoralGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit

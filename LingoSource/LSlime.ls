@@ -1,8 +1,8 @@
 global r, gEEprops, solidMtrx, gRenderCameraTilePos, effectIn3D, DRWhite, DRPxl, DRPxlRect
 
 on DRFSlimeApply(q, c, effectR)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   tlPnt = point(q2, c2)
   sldMtrxLoc = solidMtrx[q2][c2]
   openAreas = effectR.affectOpenAreas
@@ -11,7 +11,14 @@ on DRFSlimeApply(q, c, effectR)
   fc = openAreas + (1.0 - openAreas) * (solidAfaMv(tlPnt, 3))
   repeat with d = 1 to 30
     lr = 30 - d
-    flgPnt = 1 + (d > 9) + (d > 19)
+    flgPnt = 1
+    if (d > 9) then
+      flgPnt = flgPnt + 1
+    end if
+    if (d > 19) then
+      flgPnt = flgPnt + 1
+    end if
+     
     if (lr = 9) or (lr = 19) then
       sld = (sldMtrxLoc[flgPnt])
       fc = openAreas + (1.0 - openAreas) * (solidAfaMv(tlPnt, flgPnt))

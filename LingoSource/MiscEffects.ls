@@ -3,8 +3,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 --leo
 on applyIvy me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
       d = random(30)-1
@@ -110,11 +110,11 @@ on applyIvy me, q, c, eftc
         end case
       end if
       
-      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos) + gRenderCameraTilePos) = 0 then
+      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos)) = 0 then
         exit
       end if
       
-      if solidAfaMv(giveGridPos(lstPos) + gRenderCameraTilePos, lr) = 1 then
+      if solidAfaMv(giveGridPos(lstPos), lr) = 1 then
         exit repeat
       end if
     end repeat
@@ -142,8 +142,8 @@ end
 
 -- tronsx
 on ApplyThunderGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of
     "All":
@@ -187,7 +187,7 @@ on ApplyThunderGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -234,7 +234,7 @@ on ApplyThunderGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -262,8 +262,8 @@ end
 
 -- ludocrypt
 on applyMushroomStubs me, q, c, amount
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   mdPnt = giveMiddleOfTile(point(q,c))
   
