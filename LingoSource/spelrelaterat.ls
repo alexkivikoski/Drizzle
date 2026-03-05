@@ -59,9 +59,11 @@ on withinBoundsOfLevel(pos)
 end
 
 on depthPnt(pnt, dpt)
-  global ldEvilCangleLayer
+  global ldEvilCangleLayer, gLOprops
+  cols: number = gLOprops.size.loch * 20
+  rows: number = gLOprops.size.locv * 20
   if ldEvilCangleLayer then dpt = dpt + 30
-  return (pnt - point(700, 800 / 3)) / ((10 + dpt * 0.025) * 0.1) + point(700, 800 / 3)
+  return (pnt - point(cols / 2, rows / 3)) / ((10 + dpt * 0.025) * 0.1) + point(cols / 2, rows / 3)
 end
 
 on seedForTile(tile: point, effectSeed: number)
@@ -234,7 +236,7 @@ end
 
 on pasteShortCutHole(mem: string, pnt: point, dp: number, cl)
   global gLEProps, gLOprops, gCameraProps, gCurrentRenderCamera, gRenderCameraTilePos, gRenderCameraPixelPos
-  rct = giveMiddleOfTile(pnt) - (gRenderCameraTilePos * 20) - gRenderCameraPixelPos
+  rct = giveMiddleOfTile(pnt)
   rct = depthPnt(rct, dp)
   rct = rect(rct, rct) + rect(-10, -10, 10, 10)
   idString: string = ""

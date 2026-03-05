@@ -68,7 +68,7 @@ on newFrame(me)
       the randomSeed = seedForTile(giveGridPos(mdPoint), prpSets.seed)
       if (gCurrentlyRenderingTrash = FALSE) then
         camPos20 = gRenderCameraTilePos * 20
-        qd = qd - [camPos20, camPos20, camPos20, camPos20]
+        --qd = qd - [camPos20, camPos20, camPos20, camPos20]
       end if
       if (gCurrentlyRenderingTrash) then
         data = []
@@ -90,7 +90,7 @@ on ShouldThisPropRender(prop, qd: list, settings)
   if (gCurrentlyRenderingTrash = FALSE) then
     qd = qd * (20.0 / 16.0)
     camPos20 = gRenderCameraTilePos * 20
-    qd = qd - [camPos20, camPos20, camPos20, camPos20]
+    --qd = qd - [camPos20, camPos20, camPos20, camPos20]
   end if
   mdPoint: point = (qd[1] + qd[2] + qd[3] + qd[4]) / 4.0
   dig: number = 0
@@ -462,7 +462,7 @@ on renderChainEffectProp(prop, data, dp)
     -- Draw
     lastPos = data.points[pl]
     nextPos = data.points[pn]
-    pt = point(lerp(lastPos.locH, nextPos.locH, lrp), lerp(lastPos.locV, nextPos.locV, lrp)) - gRenderCameraTilePos*20
+    pt = point(lerp(lastPos.locH, nextPos.locH, lrp), lerp(lastPos.locV, nextPos.locV, lrp))
     dir = lookAtpoint(lastPos, nextPos)
     
     member("layer"&string(dp)).image.copyPixels(member(graf).image, rotateToQuadFix(rect(pt,pt)+place, dir), grab, {#color:color(255,0,0)})
@@ -505,7 +505,7 @@ on renderBigChainSegment(ropePointIndex, ropeDepth, segmentStartPos, segmentEndP
   -- box defining where the chain is drawn on the screen
   drawBox = [pntA - segmentPerpendicularDirection * wdth, pntA + segmentPerpendicularDirection * wdth, pntB + segmentPerpendicularDirection * wdth, pntB - segmentPerpendicularDirection * wdth]
   -- get it into camera space
-  drawBox = drawBox - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+  
   
   highlightOffset = [point(-2,-2), point(-2,-2), point(-2,-2), point(-2,-2)]
   
@@ -551,7 +551,7 @@ on renderCustomRopeSegment(num, prop, data, dp, pos, dir, perp, lastPos, lastDir
   end if
   pastQd = [pntA - lastPerp * wdth, pntA + lastPerp * wdth, pntB + lastPerp * wdth, pntB - lastPerp * wdth]
   renderCamMul = gRenderCameraTilePos * 20
-  pastQd = pastQd - [renderCamMul, renderCamMul, renderCamMul, renderCamMul]
+  
   sav2 = member("previewImprt")
   colored = (prop.tags.getPos("colored") > 0)
   if (colored) then
@@ -626,14 +626,14 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       wdth = data.settings.thickness/2.0
       
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       member("layer"&string(dp)).image.copyPixels(member("pxl").image, pastQd, rect(0,0,1,1), {#color:color(255, 0,0)})
       
     "Christmas Wire":
       wdth = 8.5
       pastQd = [pos + perp*wdth, pos - perp*wdth, lastPos - lastPerp*wdth, lastPos + lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       member("layer"&string(dp)).image.copyPixels(member("christmasWireGraf"&altGrafLG).image, pastQd, rect(0,1,17,25), {#ink:36})
       member("gradientA"&string(dp)).image.copyPixels(member("christmasWireGrad").image, pastQd, rect(0,1,17,25), {#ink:39})
@@ -647,7 +647,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
     "Ornate Wire":
       wdth = 8.5
       pastQd = [pos + perp*wdth, pos - perp*wdth, lastPos - lastPerp*wdth, lastPos + lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       rcTc = rect(0,1,17,25)
       member("layer"&string(dp)).image.copyPixels(member("tangledWireGraf").image, pastQd, rcTc, {#ink:36})
@@ -658,7 +658,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       wdth = 5.0
       
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 1 to 4 then
         if(dp + a <= 30)then
@@ -672,7 +672,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
     "ThickWire":
       wdth = 2
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 1 to 3 then
         if(dp + a <= 30)then
@@ -686,7 +686,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
     "RidgedTube":
       wdth = 5
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 1 to 4 then
         if(dp + a <= 30)then
@@ -711,7 +711,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end if
       myPerp = lastPerp
       pastQd = [pos - myPerp*wdth, pos + myPerp*wdth, lastPos + myPerp*wdth, lastPos - myPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       
       repeat with a = 1 to 5 then
@@ -727,7 +727,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       
       repeat with a = 1 to 4 then
         if(dp + a <= 29)then
-          member("layer"&string(dp + a)).image.copyPixels(member("fuelHoseJoint").image, rect(pos, pos)+rect(-jointSize,-jointSize,jointSize,jointSize)-rect(gRenderCameraTilePos*20,gRenderCameraTilePos*20), rect(0,1+(a-1)*12,12,1+a*12), {#ink:36})
+          member("layer"&string(dp + a)).image.copyPixels(member("fuelHoseJoint").image, rect(pos, pos)+rect(-jointSize,-jointSize,jointSize,jointSize), rect(0,1+(a-1)*12,12,1+a*12), {#ink:36})
         else 
           exit repeat
         end if
@@ -748,7 +748,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
         Bprp = MoveToPoint(point(0,0), point( lerp(lastPerp.loch, perp.loch, (b+1)/3.0), lerp(lastPerp.locv, perp.locv, (b+1)/3.0)), 1.0)
         
         pastQd = [pntA - Aprp*wdth, pntA + Aprp*wdth, pntB + Bprp*wdth, pntB - Bprp*wdth]
-        pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+        
         
         
         repeat with a = 2 to 5 then
@@ -765,7 +765,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
         wdth = 7
         myPerp = lastPerp
         pastQd = [pos - myPerp*wdth, pos + myPerp*wdth, lastPos + myPerp*wdth, lastPos - myPerp*wdth]
-        pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+        
         
         repeat with a = 1 to 5 then
           if(dp + a <= 30)then
@@ -777,7 +777,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
         
         repeat with a = 1 to 4 then
           if(dp + a <= 29)then
-            member("layer"&string(dp + a)).image.copyPixels(member("fuelHoseJoint").image, rect(pos, pos)+rect(-6,-6,6,6)-rect(gRenderCameraTilePos*20,gRenderCameraTilePos*20), rect(0,1+(a-1)*12,12,1+a*12), {#ink:36})
+            member("layer"&string(dp + a)).image.copyPixels(member("fuelHoseJoint").image, rect(pos, pos)+rect(-6,-6,6,6), rect(0,1+(a-1)*12,12,1+a*12), {#ink:36})
           else 
             exit repeat
           end if
@@ -797,7 +797,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       pntB = pos - dr*11
       
       pastQd = [pntA - lastPerp*wdth, pntA + lastPerp*wdth, pntB + lastPerp*wdth, pntB - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       if(prop.nm = "Large Chain")then
         repeat with a = 0 to 5 then
@@ -835,13 +835,13 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       pntB = pos - dr*17
       
       pastQd = [pntA - lastPerp*wdth, pntA + lastPerp*wdth, pntB + lastPerp*wdth, pntB - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
       
-      renderBeveledImage(member("BikeChainBolt").image, dp, [lastPos + point(-8,-8), lastPos + point(8,-8), lastPos + point(8,8), lastPos + point(-8,8)] - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20], 2)
+      
+      renderBeveledImage(member("BikeChainBolt").image, dp, [lastPos + point(-8,-8), lastPos + point(8,-8), lastPos + point(8,8), lastPos + point(-8,8)] , 2)
       
       repeat with a = 1 to 9 then
         pstDp = restrict(dp + a, 0, 29)
-        member("layer"&string(pstDp)).image.copyPixels(member("BikeChainBolt").image, rect(lastPos, lastPos) + rect(-8,-8,8,8)-rect(gRenderCameraTilePos*20, gRenderCameraTilePos*20), member("BikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
+        member("layer"&string(pstDp)).image.copyPixels(member("BikeChainBolt").image, rect(lastPos, lastPos) + rect(-8,-8,8,8), member("BikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
       end repeat
       
       if((num mod 2)=0)then
@@ -875,16 +875,16 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       pntB = pos - dr*34
       
       pastQd = [pntA - lastPerp*wdth, pntA + lastPerp*wdth, pntB + lastPerp*wdth, pntB - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
       
-      renderBeveledImage(member("BigBikeChainBolt").image, dp, [lastPos + point(-16,-16), lastPos + point(16,-16), lastPos + point(16,16), lastPos + point(-16,16)] - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20], 2)
+      
+      renderBeveledImage(member("BigBikeChainBolt").image, dp, [lastPos + point(-16,-16), lastPos + point(16,-16), lastPos + point(16,16), lastPos + point(-16,16)] , 2)
       if (num = 1) then
         return
       end if
       
       repeat with a = 1 to 9 then
         pstDp = restrict(dp + a, 0, 58)
-        member("layer"&string(pstDp)).image.copyPixels(member("BigBikeChainBolt").image, rect(lastPos, lastPos) + rect(-16,-16,16,16)-rect(gRenderCameraTilePos*20, gRenderCameraTilePos*20), member("BigBikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
+        member("layer"&string(pstDp)).image.copyPixels(member("BigBikeChainBolt").image, rect(lastPos, lastPos) + rect(-16,-16,16,16), member("BigBikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
       end repeat
       
       if((num mod 2)=0)then
@@ -918,15 +918,15 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       pntB = pos - dr*68
       
       pastQd = [pntA - lastPerp*wdth, pntA + lastPerp*wdth, pntB + lastPerp*wdth, pntB - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
       
-      renderBeveledImage(member("HugeBikeChainBolt").image, dp, [lastPos + point(-32,-32), lastPos + point(32,-32), lastPos + point(32,32), lastPos + point(-32,32)] - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20], 2)
+      
+      renderBeveledImage(member("HugeBikeChainBolt").image, dp, [lastPos + point(-32,-32), lastPos + point(32,-32), lastPos + point(32,32), lastPos + point(-32,32)] , 2)
       if (num = 1) then
         return
       end if
       repeat with a = 1 to 9 then
         pstDp = restrict(dp + a, 0, 116)
-        member("layer"&string(pstDp)).image.copyPixels(member("HugeBikeChainBolt").image, rect(lastPos, lastPos) + rect(-32,-32,32,32)-rect(gRenderCameraTilePos*20, gRenderCameraTilePos*20), member("HugeBikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
+        member("layer"&string(pstDp)).image.copyPixels(member("HugeBikeChainBolt").image, rect(lastPos, lastPos) + rect(-32,-32,32,32), member("HugeBikeChainBolt").image.rect, {#ink:36, #color:color(0, 255, 0)})
       end repeat
       
       if((num mod 2)=0)then
@@ -954,7 +954,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
     "Fat Hose":
       wdth = 20
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 4 then
         if(dp + a + 1 <= 29)then
@@ -965,7 +965,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       pastQd = [pos - perp*wdth - dir*5, pos + perp*wdth - dir*5, pos + perp*wdth + dir*5, pos - perp*wdth + dir*5]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 5 then
         if(dp + a <= 29)then
@@ -976,7 +976,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       mdPnt = (pos + lastPos)/2
-      mdPnt = mdPnt - gRenderCameraTilePos*20
+      
       member("layer"&string(dp)).image.copyPixels(member("fatHoseGraf").image, rect(mdPnt,mdPnt)+rect(-5,-5,5,5), rect(80,0,90,10), {#ink:36})
       
     "Wire Bunch", "Wire Bunch 2":
@@ -1053,7 +1053,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       
       wdth = 20
       pastQd = [pos -dr*3.5 - perp*wdth, pos -dr*3.5 + perp*wdth, pos + dr*3.5 + perp*wdth, pos +dr*3.5 - perp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       mnClamp = 0
       if(dp>=6)then
         mnClamp = 6
@@ -1076,7 +1076,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
     "Big Big Pipe":
       wdth = 20
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 4 then
         if(dp + a + 1 <= 29)then
@@ -1087,7 +1087,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       pastQd = [pos - perp*wdth - dir*5, pos + perp*wdth - dir*5, pos + perp*wdth + dir*5, pos - perp*wdth + dir*5]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 5 then
         if(dp + a <= 29)then
@@ -1098,13 +1098,13 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       mdPnt = (pos + lastPos)/2
-      mdPnt = mdPnt - gRenderCameraTilePos*20
+      
       member("layer"&string(dp)).image.copyPixels(member("bigBigPipeGraf").image, rect(mdPnt,mdPnt)+rect(-5,-5,5,5), rect(80,0,90,10), {#ink:36})
       
     "Ring Chain":
       wdth = 20
       pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 4 then
         if(dp + a <= 29)then
@@ -1115,7 +1115,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       pastQd = [pos - perp*wdth - dir*5, pos + perp*wdth - dir*5, pos + perp*wdth + dir*5, pos - perp*wdth + dir*5]
-      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
       
       repeat with a = 0 to 4 then
         if(dp + a <= 29)then
@@ -1126,7 +1126,7 @@ on renderRopeSegment(num: number, prop, data, dp: number, pos: point, dir: point
       end repeat
       
       mdPnt = (pos + lastPos)/2
-      mdPnt = mdPnt - gRenderCameraTilePos*20
+      
       member("layer"&string(dp)).image.copyPixels(member("ringChainGraf").image, rect(mdPnt,mdPnt)+rect(-5,-5,5,5), rect(80,0,90,10), {#ink:36})
       
   end case
@@ -1158,7 +1158,7 @@ on DrawBezierWire(startDir: point, A: point, aHandle: point, B: point, bHandle: 
     
     wdth = 2
     pastQd = [pos - perp*wdth + dir, pos + perp*wdth + dir, lastPos + lastPerp*wdth - lastDir, lastPos - lastPerp*wdth - lastDir]
-    pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+    
     
     myDp = lerp(aDp, bDp, i.float / repeats.float).integer
     
@@ -1967,8 +1967,7 @@ on renderLongProp(qd, prop, data, dp)
           repeat with t2 = 1 to (mossLength).integer / 2 then
             
             percent2 = (t2 / (mossLength / 2)).float
-            --qd2 = lerp(qd, point(qd.locH, qd.locV + mossLength), percent2)
-            qd2 = lerpPnt(qd, point(qd.locH, qd.locV + mossLength), percent2)
+            qd2 = lerp(qd, point(qd.locH, qd.locV + mossLength), percent2)
             depthCheck = true
             points2.add([qd2, depthRange - depthOffset])
             repeat while depthCheck then
@@ -1995,10 +1994,10 @@ on renderLongProp(qd, prop, data, dp)
         totalPoints = 0
         totalPoints = points.count
         totalLine = lerp(0.3, 0.7, random(100).float/100)
-        if prop.nm = "Moss Hang A" then 
+        if prop[1] = "Moss Hang A" then 
           eftc = "A"
           colr = color(255, 0, 255)
-        else if prop.nm = "Moss Hang B" then 
+        else if prop[1] = "Moss Hang B" then 
           eftc = "B"
           colr = color(0, 255, 255)
         else

@@ -1,4 +1,4 @@
-global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
+global vertRepeater, r, gLEprops, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
 
 on exitFrame(me)
   if (checkMinimize()) then
@@ -49,8 +49,8 @@ on newFrame(me)
   if (effectr.crossScreen = 0) then
     sprite(59).locV = vertRepeater * 20
     repeat with q = 1 to 100
-      q2 = q + gRenderCameraTilePos.locH
-      c2 = vertRepeater + gRenderCameraTilePos.locV
+      q2 = q
+      c2 = vertRepeater
       if (q2 > 0) then
         if (q2 <= gLOprops.size.locH) then
           if (c2 > 0) then
@@ -62,10 +62,10 @@ on newFrame(me)
       end if
     end repeat
   else
-    repmcam = vertRepeater - gRenderCameraTilePos.locV
+    repmcam = vertRepeater
     sprite(59).locV = repmcam * 20
     repeat with q2 = 1 to gLOprops.size.locH
-      me.effectOnTile(q2 - gRenderCameraTilePos.locH, repmcam, q2, vertRepeater, effectr)
+      me.effectOnTile(q2, repmcam, q2, vertRepeater, effectr)
     end repeat
   end if
 end
@@ -483,8 +483,8 @@ on initEffect me
   
   case effectr.nm of
     "BlackGoo":
-      cols = 100
-      rows = 60
+      cols = gLOprops.size.loch
+      rows = gLOprops.size.locv
       
       member("blackOutImg1").image = image(cols*20, rows*20, 32)
       blk1 = member("blackOutImg1").image
@@ -497,10 +497,10 @@ on initEffect me
       
       global gRenderCameraTilePos, gRenderCameraPixelPos
       
-      repeat with q = 1 to 100
-        repeat with c = 1 to 60
-          q2 = q + gRenderCameraTilePos.locH
-          c2 = c + gRenderCameraTilePos.locV
+      repeat with q = 1 to cols
+        repeat with c = 1 to rows
+          q2 = q
+          c2 = c
           if(q2 < 1)or(q2 > gLOprops.size.locH)or(c2 < 1)or(c2 > gLOprops.size.locV)then
             blk1.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
             blk2.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
@@ -512,11 +512,11 @@ on initEffect me
       rct = blobImg.rect
       repeat with q2 = 1 to cols then
         repeat with c2 = 1 to rows then
-          if(q2+gRenderCameraTilePos.locH > 0)and(q2+gRenderCameraTilePos.locH <= gLOprops.size.locH)and(c2+gRenderCameraTilePos.locV > 0)and(c2+gRenderCameraTilePos.locV <= gLOprops.size.locV)then
-            tile = point(q2,c2)+gRenderCameraTilePos
+          
+            tile = point(q2,c2)
             
             if (effectr.mtrx[tile.locH][tile.locV] = 0) then
-              sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+              sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)
               
               repeat with d = 1 to 10
                 repeat with e = 1 to 10
@@ -527,19 +527,19 @@ on initEffect me
                 end repeat
               end repeat
             else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
-              ps = giveMiddleOfTile(point(q2,c2))--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+              ps = giveMiddleOfTile(point(q2,c2))
               blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
               blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
               blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
               blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
             end if
-          end if
+          
         end repeat
       end repeat
       
     "Super BlackGoo":
-      cols = 100
-      rows = 60
+      cols: number = gLOprops.size.loch * 20
+      row: number = gLOprops.size.locv * 20
       
       member("blackOutImg1").image = image(cols*20, rows*20, 32)
       blk1 = member("blackOutImg1").image
@@ -552,10 +552,10 @@ on initEffect me
       
       global gRenderCameraTilePos, gRenderCameraPixelPos
       
-      repeat with q = 1 to 100
-        repeat with c = 1 to 60
-          q2 = q + gRenderCameraTilePos.locH
-          c2 = c + gRenderCameraTilePos.locV
+      repeat with q = 1 to cols
+        repeat with c = 1 to rows
+          q2 = q
+          c2 = c
           if(q2 < 1)or(q2 > gLOprops.size.locH)or(c2 < 1)or(c2 > gLOprops.size.locV)then
             blk1.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
             blk2.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
@@ -567,29 +567,29 @@ on initEffect me
       rct = blobImg.rect
       repeat with q2 = 1 to cols
         repeat with c2 = 1 to rows
-          if(q2+gRenderCameraTilePos.locH > 0)and(q2+gRenderCameraTilePos.locH <= gLOprops.size.locH)and(c2+gRenderCameraTilePos.locV > 0)and(c2+gRenderCameraTilePos.locV <= gLOprops.size.locV)then
-            tile = point(q2,c2)+gRenderCameraTilePos
+          
+          tile = point(q2,c2)
+          
+          if (gEEprops.effects[r].mtrx[tile.locH][tile.locV] = 0) then
+            sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)
             
-            if (gEEprops.effects[r].mtrx[tile.locH][tile.locV] = 0) then
-              sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
-              
-              repeat with d = 1 to 10
-                repeat with e = 1 to 10
-                  ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
-                  -- if member("layer0").image.getPixel(ps) = color(255, 255, 255) then
-                  blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
-                  blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
-                  -- end if 
-                end repeat
+            repeat with d = 1 to 10
+              repeat with e = 1 to 10
+                ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
+                -- if member("layer0").image.getPixel(ps) = color(255, 255, 255) then
+                blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
+                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
+                -- end if 
               end repeat
-            else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
-              ps = giveMiddleOfTile(point(q2,c2))--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
-              blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-              blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-              blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-              blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-            end if
+            end repeat
+          else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
+            ps = giveMiddleOfTile(point(q2,c2))
+            blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+            blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
+            blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+            blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
           end if
+          
         end repeat
       end repeat
       
@@ -742,12 +742,14 @@ on initEffect me
 end
 
 on exitEffect me
+  cols: number = gLOprops.size.loch * 20
+  row: number = gLOprops.size.locv * 20
   case gEEprops.effects[r].nm of
     "BlackGoo":
       
       lr0 = member("layer0").image
-      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,100*20, 60*20), rect(0,0,100*20, 60*20), {#ink:36, #color:color(0, 255, 0)})
-      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,100*20, 60*20), rect(0,0,100*20, 60*20), {#ink:36, #color:color(255, 0, 0)})
+      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols*20, rows*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(0, 255, 0)})
+      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols*20, rows*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(255, 0, 0)})
       
       
       member("blackOutImg1").image = image(1, 1, 1)
@@ -758,8 +760,8 @@ on exitEffect me
     "Super BlackGoo":
       
       lr0 = member("layer0").image
-      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,100*20, 60*20), rect(0,0,100*20, 60*20), {#ink:36, #color:color(0, 255, 0)})
-      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,100*20, 60*20), rect(0,0,100*20, 60*20), {#ink:36, #color:color(255, 0, 0)})
+      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols*20, cols*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(0, 255, 0)})
+      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols*20, cols*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(255, 0, 0)})
       
       
       member("blackOutImg1").image = image(1, 1, 1)

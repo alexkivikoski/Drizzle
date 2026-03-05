@@ -23,9 +23,9 @@ on exitFrame(me)
 end
 
 on newFrame(me)
-  cols: number = 2000
-  rows: number = 1200
-  marginPixels: number = 150
+  cols: number = gLOprops.size.loch * 20
+  rows: number = gLOprops.size.locv * 20
+  marginPixels: number = 0
   marginRect: rect = rect(0, 0, cols + marginPixels * 2, rows + marginPixels * 2)
   fullRect: rect = rect(0, 0, cols, rows)
   inv: image = image(marginRect.right, marginRect.bottom, 1)
