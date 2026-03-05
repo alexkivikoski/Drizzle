@@ -2,8 +2,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 
 on applyGrapeRoots me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
       d = random(30)-1
@@ -32,7 +32,7 @@ on applyGrapeRoots me, q, c, eftc
     rgthBorder =  mdPnt.locH+10
     grape=[]
     layerd = member("layer"&string(d)).image
-    repeat while pnt.locV+gRenderCameraTilePos.locV*20 > -100
+    repeat while pnt.locV > -100
       lstPos = pnt
       pnt = pnt + degToVec(-45+random(90))*(2+random(6))
       pnt.locH = restrict(pnt.locH, lftBorder, rgthBorder)
@@ -47,11 +47,11 @@ on applyGrapeRoots me, q, c, eftc
         layerd.copyPixels(DRPxl, qd, DRPxlRect, {#color:gLOProps.pals[gLOProps.pal].detCol})
       end if
       
-      if solidAfaMv(giveGridPos(lstPos) + gRenderCameraTilePos, lr) = 1 then
+      if solidAfaMv(giveGridPos(lstPos), lr) = 1 then
         exit repeat
       end if
       
-      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos) + gRenderCameraTilePos) = 0 then
+      if skyRootsFix and withinBoundsOfLevel(giveGridPos(lstPos)) = 0 then
         exit
       end if
       
@@ -86,8 +86,8 @@ on applyGrapeRoots me, q, c, eftc
 end
 
 on applyHandGrowers me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   frontWall = 0
   backWall = 29
   
@@ -144,7 +144,7 @@ on applyHandGrowers me, q, c, eftc
       pnt.locH=pnt.locH -2 + random(3)
       points.add(point(pnt.locH, pnt.locV))
       
-      tlPos = giveGridPos(point(pnt.locH, pnt.locV)) + gRenderCameraTilePos
+      tlPos = giveGridPos(point(pnt.locH, pnt.locV))
       if tlPos.inside(rect(1,1,gLOprops.size.loch+1,gLOprops.size.locv+1)) = 0 then
         exit repeat
       else if solidAfaMv(tlPos, lr) = 1 then
@@ -281,8 +281,8 @@ on applyHandGrowers me, q, c, eftc
 end
 
 on applySpindle me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
       lr = random(3)
@@ -370,7 +370,7 @@ on applySpindle me, q, c, eftc
           tempPnt = tempPnt+headPos
           
           --(afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1-1)=1)
-          if afaMvLvlEdit(giveGridPos(tempPnt)+gRenderCameraTilePos, Lr) = 0 and branch > 5 then
+          if afaMvLvlEdit(giveGridPos(tempPnt), Lr) = 0 and branch > 5 then
             
             tempPoints.add(spindleDic[bezDir][collisionCheck])
           end if
@@ -486,8 +486,8 @@ end
 
 
 on applyWireBunch me, q, c, eftc 
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of
     "All":
@@ -578,8 +578,8 @@ end
 
 
 on ApplyJoarFW me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       lsL = [1,2,3]
@@ -713,8 +713,8 @@ end
 
 --my little HBlings, inspired by the Odradek from death stranding
 on applyOrblings me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       lsL = [1,2,3]
@@ -751,14 +751,14 @@ on applyOrblings me, q, c
       qd = qd + degToVecFac2(orbAngle, 20, 20)
       orbAngle = lerp(135, 225, random(100).float/100)
       points.add(qd)
-      if withinBoundsOfLevel(giveGridPos(qd) + gRenderCameraTilePos) = 0 then
+      if withinBoundsOfLevel(giveGridPos(qd)) = 0 then
         if skyRootsFix then
           exit 
         end if
         repeatFlag = false
       end if
       
-      if afaMvLvlEdit(giveGridPos(qd) + gRenderCameraTilePos, lsL) = 1 then
+      if afaMvLvlEdit(giveGridPos(qd), lsL) = 1 then
         repeatFlag = false
       end if
       
@@ -826,8 +826,8 @@ on applyOrblings me, q, c
 end
 
 on applyMamaOrblings me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       lsL = [1,2,3]
@@ -868,14 +868,14 @@ on applyMamaOrblings me, q, c
       qd = qd + degToVecFac2(orbAngle, distLerp, distLerp)
       orbAngle = lerp(135, 225, random(100).float/100)
       points.add(qd)
-      if withinBoundsOfLevel(giveGridPos(qd) + gRenderCameraTilePos) = 0 then
+      if withinBoundsOfLevel(giveGridPos(qd)) = 0 then
         if skyRootsFix then
           exit 
         end if
         repeatFlag = false
       end if
       
-      if afaMvLvlEdit(giveGridPos(qd) + gRenderCameraTilePos, lsL) = 1 then
+      if afaMvLvlEdit(giveGridPos(qd), lsL) = 1 then
         repeatFlag = false
       end if
       

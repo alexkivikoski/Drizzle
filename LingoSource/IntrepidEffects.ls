@@ -3,8 +3,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 
 on ApplyFancyGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -50,7 +50,7 @@ on ApplyFancyGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -97,7 +97,7 @@ on ApplyFancyGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -122,8 +122,8 @@ on ApplyFancyGrower me, q, c, eftc
 end
 
 on ApplyIceGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -169,7 +169,7 @@ on ApplyIceGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -216,7 +216,7 @@ on ApplyIceGrower me, q, c, eftc
         blnd2 = blnd2 - 0.15
       end if
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -241,8 +241,8 @@ on ApplyIceGrower me, q, c, eftc
 end
 
 on ApplyGrassGrower me, q, c, eftc
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
     "All":
@@ -288,7 +288,7 @@ on ApplyGrassGrower me, q, c, eftc
       if(searchBase > 0)then
         moveDir = point(0,0)
         repeat with tst in [point(-1,0), point(1,0), point(1,1), point(0,1), point(-1, 1)] then
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if(tstPnt.locH > 0)and(tstPnt.locH < gLOprops.size.locH-1)and(tstPnt.locV > 0)and(tstPnt.locV < gLOprops.size.locV-1)then
             moveDir = moveDir + tst*gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -324,7 +324,7 @@ on ApplyGrassGrower me, q, c, eftc
       
       blnd = blnd * 0.85
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit

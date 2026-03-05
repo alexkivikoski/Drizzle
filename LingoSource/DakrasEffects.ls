@@ -2,8 +2,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 
 --dakras
 on ApplySideKelp(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -52,7 +52,7 @@ on ApplySideKelp(me, q, c)
       
       blnd = blnd * 0.85
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -83,8 +83,8 @@ on ApplySideKelp(me, q, c)
 end
 
 on ApplyFlipSideKelp(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -133,7 +133,7 @@ on ApplyFlipSideKelp(me, q, c)
       
       blnd = blnd * 0.85
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -164,8 +164,8 @@ on ApplyFlipSideKelp(me, q, c)
 end
 
 on ApplyMixKelp(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -217,7 +217,7 @@ on ApplyMixKelp(me, q, c)
       
       blnd = blnd * 0.85
       
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -248,8 +248,8 @@ on ApplyMixKelp(me, q, c)
 end
 
 on ApplyBubbleGrower(me, q, c)
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -283,7 +283,7 @@ on ApplyBubbleGrower(me, q, c)
       if (searchBase > 0) then
         moveDir = point(0, 0)
         repeat with tst in [point(-1, 0), point(1, 0), point(1, 1), point(0, 1), point(-1, 1)]
-          tstPnt = giveGridPos(lastPnt) + gRenderCameraTilePos + tst
+          tstPnt = giveGridPos(lastPnt) + tst
           if (tstPnt.locH > 0) and (tstPnt.locH < gLOprops.size.locH - 1) and (tstPnt.locV > 0) and (tstPnt.locV < gLOprops.size.locV - 1) then
             moveDir = moveDir + tst * gEEprops.effects[r].mtrx[tstPnt.locH][tstPnt.locV]
           end if
@@ -323,7 +323,7 @@ on ApplyBubbleGrower(me, q, c)
         copyPixelsToEffectColor(gdLayer, d, qd, "softBrush1", member("softBrush1").image.rect, 0.5, blnd2)
         blnd2 = blnd2 - 0.4
       end if
-      tlPos = giveGridPos(pnt) + gRenderCameraTilePos
+      tlPos = giveGridPos(pnt)
       
       if skyRootsFix and withinBoundsOfLevel(tlPos) = 0 then
         exit
@@ -348,8 +348,8 @@ end
 
 
 on applyClubMoss me, q, c, amount
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   mdPnt = giveMiddleOfTile(point(q,c))
   
@@ -409,7 +409,7 @@ on applyClubMoss me, q, c, amount
     
     if(solid = 0)then
       repeat with dr in [point(-1,0), point(0,-1), point(0,1), point(1,0)]then
-        if(solidAfaMv(giveGridPos(startPos + dr*rad)+gRenderCameraTilePos, lr) = 1)then
+        if(solidAfaMv(giveGridPos(startPos + dr*rad), lr) = 1)then
           solid = 1
           exit repeat
         end if
@@ -441,8 +441,8 @@ on applyClubMoss me, q, c, amount
 end
 
 on applyMossWall me, q, c, amount
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   mdPnt = giveMiddleOfTile(point(q,c))
   
@@ -502,7 +502,7 @@ on applyMossWall me, q, c, amount
     
     if(solid = 0)then
       repeat with dr in [point(-1,0), point(0,-1), point(0,1), point(1,0)]then
-        if(solidAfaMv(giveGridPos(startPos + dr*rad)+gRenderCameraTilePos, lr) = 1)then
+        if(solidAfaMv(giveGridPos(startPos + dr*rad), lr) = 1)then
           solid = 1
           exit repeat
         end if

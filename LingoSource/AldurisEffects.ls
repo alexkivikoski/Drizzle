@@ -3,8 +3,8 @@ global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd
 on ApplyMosaicPlant me, q, c
   global mosaicPlantStarts
   
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   -- Layers option is intentionally limited here
   lr = lrSup
@@ -105,13 +105,13 @@ on ApplyMosaicPlant me, q, c
     repeat with i = leaves.count down to 1 then -- reverse order for drawing reasons (outwards-in)
       leafPt = leaves[i]
       -- stem
-      tl = (startPt + leafPt) / 2.0 - gRenderCameraTilePos
+      tl = (startPt + leafPt) / 2.0
       tl = tl * 20.0 + point(10.0, 10.0)
       sz = point(1, (diag(startPt, leafPt) * 20.0).integer) / 2.0
       qd = rotateToQuadFix(rect(tl, tl) + rect(-sz, sz), lookAtPoint(leafPt, startPt))
       member("layer"&string(lr)).image.copypixels(member("pxl").image, qd, rect(0,0,1,1), {#color:color(255,0,0), #ink:36})
       -- leaf
-      tl = (leafPt - gRenderCameraTilePos) * 20.0 + point(10.0, 10.0)
+      tl = (leafPt) * 20.0 + point(10.0, 10.0)
       qd = rotateToQuadFix(rect(tl, tl) + rect(-grafSz, grafSz), lookAtPoint(leafPt, startPt))
       member("layer"&string(lr-1)).image.copypixels(member("mosaicLeafGraf").image, qd, rect(0,0,6,11), {#color:colr, #ink:36})
       if colrIntensity <> "N" then
@@ -124,7 +124,7 @@ on ApplyMosaicPlant me, q, c
       if hasFlowers and random(3) = 1 then
         ds = random(diag(startPt, leaves[leaves.count])) * 0.45
         ang = random(360) / PI
-        tl = startPt + point(cos(ang) * ds, sin(ang) * ds) - gRenderCameraTilePos
+        tl = startPt + point(cos(ang) * ds, sin(ang) * ds)
         tl = (tl * 20.0) + point(10.0, 10.0)
         
         ang = random(360/PI)
@@ -224,8 +224,8 @@ on InitMosaicPlants me
 end
 
 on ApplyCobweb me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   case lrSup of
     "All":
       d = random(29)
@@ -246,7 +246,7 @@ on ApplyCobweb me, q, c
     return
   end if
   
-  startPt = giveMiddleOfTile(point(q, c))+point(-11+random(21), -11+random(21)) + gRenderCameraTilePos * 20.0
+  startPt = giveMiddleOfTile(point(q, c))+point(-11+random(21), -11+random(21))
   
   -- Find branching points
   rot = random(360)
@@ -316,7 +316,7 @@ on ApplyCobweb me, q, c
   repeat with i = 1 to picked.count then
     len = diag(startPt, picked[i][2])
     mn = min(len, mn)
-    qd = (startPt + picked[i][2]) / 2.0 - gRenderCameraTilePos * 20.0
+    qd = (startPt + picked[i][2]) / 2.0
     qd = rect(qd, qd) + rect(-0.5, -len/2.0, 0.5, len/2.0)
     qd = rotateToQuad(qd, lookAtpoint(startPt, picked[i][2]))
     member("layer"&string(d)).image.copypixels(member("pxl").image, qd, rect(0,0,1,1), {#color:webcl, #ink:36})
@@ -345,8 +345,8 @@ on ApplyCobweb me, q, c
       clrp = (i + (j.float / picked.count)) * pxlSpc / diag(startPt, cur[2])
       nlrp = (i + ((j.float + 1.0) / picked.count)) * pxlSpc / diag(startPt, nxt[2])
       
-      cur = point(lerp(startPt.locH, cur[2].locH, clrp), lerp(startPt.locV, cur[2].locV, clrp)) - gRenderCameraTilePos * 20.0
-      nxt = point(lerp(startPt.locH, nxt[2].locH, nlrp), lerp(startPt.locV, nxt[2].locV, nlrp)) - gRenderCameraTilePos * 20.0
+      cur = point(lerp(startPt.locH, cur[2].locH, clrp), lerp(startPt.locV, cur[2].locV, clrp))
+      nxt = point(lerp(startPt.locH, nxt[2].locH, nlrp), lerp(startPt.locV, nxt[2].locV, nlrp))
       ang = lookAtpoint(cur, nxt)
       
       -- Draw the line
@@ -364,8 +364,8 @@ on ApplyCobweb me, q, c
 end
 
 on ApplyFingers me, q, c
-  q2 = q + gRenderCameraTilePos.locH
-  c2 = c + gRenderCameraTilePos.locV
+  q2 = q
+  c2 = c
   
   case lrSup of
     "All":
