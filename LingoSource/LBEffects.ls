@@ -1158,7 +1158,7 @@ on applyColoredWires me, q, c, eftc
     
     myCamera = me.closestCamera(startPos+gRenderCameraTilePos*20)
     if(myCamera = 0)then
-      exit
+      --exit
     end if
     
     fatness = 1
