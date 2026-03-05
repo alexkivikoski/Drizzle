@@ -239,14 +239,14 @@ on loadLevel me, lvlName, fullPath
   
   me.versionFix()
   
-  member("lightImage").image = image((gLOprops.size.loch*20)+300, (gLOprops.size.locv*20)+300, 1)
+  member("lightImage").image = image((gLOprops.size.loch*20), (gLOprops.size.locv*20), 1)
   sav = member("lightImage")
   
   member("lightImage").importFileInto(pth & lvlName & ".png")
   sav.name = "lightImage"
   
-  if (member("lightImage").image.rect <> rect(0,0,(gLOprops.size.loch*20)+300, (gLOprops.size.locv*20)+300) ) then
-    wantedRect = rect(0,0,(gLOprops.size.loch*20)+300, (gLOprops.size.locv*20)+300)
+  if (member("lightImage").image.rect <> rect(0,0,(gLOprops.size.loch*20), (gLOprops.size.locv*20)) ) then
+    wantedRect = rect(0,0,(gLOprops.size.loch*20), (gLOprops.size.locv*20))
     img = image(wantedRect.width, wantedRect.height, 1)
     img.copyPixels(member("lightImage").image, rect(wantedRect.width/2, wantedRect.height/2, wantedRect.width/2, wantedRect.height/2) + rect(-member("lightImage").rect.width/2, -member("lightImage").image.rect.height/2, member("lightImage").image.rect.width/2, member("lightImage").image.rect.height/2), member("lightImage").image.rect)
     member("lightImage").image = img
