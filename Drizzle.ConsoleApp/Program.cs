@@ -1,12 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Drizzle.ConsoleApp;
 using Drizzle.Lingo.Runtime;
 using Drizzle.Lingo.Runtime.Utils;
@@ -17,7 +8,17 @@ using Meow;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 using SixLabors.ImageSharp;
-
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+//"commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\SU --region --limit 5"
 CultureFix.FixCulture();
 
 if (!CommandLineArgs.TryParse(args, out var parsedArgs))
@@ -79,7 +80,8 @@ int DoCmdRender(CommandLineArgs.VerbRender options)
         {
             EditorRuntimeHelpers.RunLoadLevel(renderRuntime, s);
 
-            var renderer = new LevelRenderer(renderRuntime, null);
+            var renderer = new LevelRenderer(renderRuntime, null,0);
+            renderer.EnabledStages = Enum.GetValues<RenderStage>().Except([ RenderStage.RenderColors, RenderStage.RenderLight,  RenderStage.Finished]).ToArray();
             if (doChecksums)
                 renderer.OnScreenRenderCompleted += (cam, img) => HandleChecksum(levelName, cam, img, checksums);
 

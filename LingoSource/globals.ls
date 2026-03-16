@@ -116,3 +116,13 @@ type GL_drPos:                    number
 type gCustomLights:               list
 type gFSLastTm:                   number
 type gFSFlag:                     number
+type gExport_finalDecalImage:     list
+type gExport_finalImage:          list
+type gExport_rainBowMask:         list
+type gExport_fogImage:            list
+type gExport_dpImage:             list
+type gExport_flattenedGradientA:  list
+type gExport_flattenedGradientB:  list
+type gExport_color:               list
+type gDisablePerspective:         number
+type gDisableLights:              number

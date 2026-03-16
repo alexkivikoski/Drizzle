@@ -96,7 +96,7 @@ public sealed class RenderViewModel : ViewModelBase, ILingoRuntimeManager
                 {
                     Log.Verbose("Render status next: {Status}", x);
 
-                    CameraIndex = x.CameraIndex;
+                    CameraIndex = 0; //x.CameraIndex;
                     StageEnum = x.Stage.Stage;
                     StageViewModel = x.Stage switch
                     {
@@ -107,7 +107,7 @@ public sealed class RenderViewModel : ViewModelBase, ILingoRuntimeManager
                     };
                     this.RaiseAndSetIfChanged(ref _isPaused, x.IsPaused, nameof(IsPaused));
 
-                    RenderProgress = x.CountCamerasDone * 10 + StageEnum switch
+                    RenderProgress = StageEnum switch
                     {
                         RenderStage.Start => 0,
                         RenderStage.CameraSetup => 0,

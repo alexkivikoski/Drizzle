@@ -1,5 +1,5 @@
 global c, dptsL, fogDptsL, gLOprops, gViewRender, keepLooping, gCustomColor, DRFinalImage, DRFogImage, DRDpImage, DRShadowImage, DRRainbowMask, DRFlattenedGradientA, DRFlattenedGradientB, DRFinalDecalImage, gAnyDecals, gDecalColors, gPEcolors, grimeActive, grimeOnGradients, bkgFix
-global gExport_finalDecalImage, gExport_finalImage, gExport_rainBowMask, gExport_fogImage, gExport_dpImage, gExport_flattenedGradientA, gExport_flattenedGradientB
+
 on exitFrame me
   if checkMinimize() then
     _player.appMinimize()
@@ -35,24 +35,19 @@ on newFrame me
   --layercsh = member("layer" & strc & "sh").image
   --layerc = member("layer" & strc).image
 
-  if bkgFix and gDecalColors.count < 1 then
-    gDecalColors.add(color(255, 255, 255))
-  end if
-
-  DRFinalImage = gExport_finalImage[z+1]
-  DRFogImage = gExport_fogImage[z+1]
-  DRDpImage = gExport_dpImage[z+1]
-  --DRShadowImage = member("shadowImage").image
-  DRRainbowMask = gExport_rainBowMask[z+1]
-  DRFlattenedGradientA = gExport_flattenedGradientA[z+1]
-  DRFlattenedGradientB = gExport_flattenedGradientB[z+1]
-  DRFinalDecalImage = gExport_finalDecalImage[z+1]
+  DRFinalImage = member("finalImage"& strc).image
+  DRFogImage = member("fogImage"& strc).image
+  DRDpImage = member("dpImage"& strc).image
+  DRShadowImage = member("shadowImage"& strc).image
+  DRRainbowMask = member("rainBowMask"& strc).image
+  DRFlattenedGradientA = member("gradientA"& strc).image
+  DRFlattenedGradientB = member("gradientB"& strc).image
+  DRFinalDecalImage = member("finalDecalImage"& strc).image
 
   repeat with c = 1 to rows then
     repeat with q = 1 to cols then
       
       layer: number = 1
-      
       
       getColor = DRFinalImage.getPixel(q-1, c-1)
       if (getColor <> color(255, 255, 255)) then
@@ -232,7 +227,6 @@ on newFrame me
     end repeat
   end repeat
   
-  -- using c as a layer outside the loop, putting the original value back + 1
   c = z + 1
   
   

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Drizzle.Logic.Rendering;
 
-public record RenderStatus(int CameraIndex, int CountCamerasDone, bool IsPaused, RenderStageStatus Stage);
+public record RenderStatus(int CurrentIndex, int TotalCount, bool IsPaused, RenderStageStatus Stage);
 
 public record RenderStageStatus(RenderStage Stage);
+
+public record RenderStageStatusIncrement(RenderStage Stage) : RenderStageStatus(Stage);
+public record RenderStageCompleted(RenderStage Stage) : RenderStageStatus(Stage);
 
 public record RenderStageStatusLayers(int CurrentLayer) : RenderStageStatus(RenderStage.RenderLayers);
 

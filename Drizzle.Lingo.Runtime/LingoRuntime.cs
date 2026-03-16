@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -11,6 +11,7 @@ namespace Drizzle.Lingo.Runtime;
 /// </summary>
 public partial class LingoRuntime
 {
+    public bool UseHashColoredTextures { get; set; }
     private readonly Assembly _assembly;
     public LingoGlobal Global { get; }
     public LingoScriptRuntimeBase MovieScriptInstance { get; private set; } = default!;

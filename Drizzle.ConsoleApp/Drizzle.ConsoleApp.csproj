@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
@@ -19,4 +20,6 @@
     <ProjectReference Include="..\Drizzle.Logic\Drizzle.Logic.csproj" />
     <ProjectReference Include="..\Drizzle.Ported\Drizzle.Ported.csproj" />
   </ItemGroup>
+  
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://www.schemastore.org/lgtm.json" /></VisualStudio></ProjectExtensions>
 </Project>

@@ -1,15 +1,31 @@
+using System.Diagnostics;
+using System.Linq;
+
 namespace Drizzle.Lingo.Runtime.Cast;
 
 public partial class CastMember
 {
     private LingoImage? _image;
+    private LingoImage? _hashColoredImage;
+    public LingoImage? HashColoredImage {
+        get => _hashColoredImage;
+        set => _hashColoredImage = value;
+    } 
+
 
     public LingoImage? image
     {
         get
         {
             AssertType(CastMemberType.Bitmap);
-            return _image;
+            if (Runtime.UseHashColoredTextures )
+            {
+                return _hashColoredImage ?? _image;
+            }
+            else
+            {
+                return _image;
+            }
         }
         set
         {
@@ -55,8 +71,29 @@ public partial class CastMember
 
     public LingoPoint regpoint { get; set; }
 
+    private static string[] ExcludedFromHashColor = ["ayer", "radient"];
     private void ImportFileImplBitmap(string path)
     {
-        image = LingoImage.LoadFromPath(path).Trimmed();
+        FullPath = path;
+        _image = LingoImage.LoadFromPath(path).Trimmed();
+        if (!ExcludedFromHashColor.Any(s => path.Contains(s)))
+        {
+            _hashColoredImage = _image.duplicate();
+            _hashColoredImage = _hashColoredImage.HashColorizedCopy(path); //LingoImage.LoadFromPathHashColorized(path).Trimmed();
+            Debug.Assert(_image != _hashColoredImage);
+        }
+        
+#if false
+        if (Runtime.UseHashColoredTextures)
+        {
+            image = LingoImage.LoadFromPathHashColorized(path).Trimmed();
+            IsHashColorized = true;
+        }
+        else
+        {
+            
+            IsHashColorized = false;
+        }
+#endif
     }
 }

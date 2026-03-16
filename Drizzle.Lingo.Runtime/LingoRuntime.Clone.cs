@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Serilog;
 
@@ -32,8 +32,14 @@ public partial class LingoRuntime
             {
                 var srcMem = srcLib.GetMember(j)!;
                 var dstMem = dstLib.GetMember(j)!;
-
-                dstMem.CloneFrom(srcMem);
+                if (srcMem.HashColoredImage != null && srcMem.FullPath != null)
+                {
+                    dst.LoadSingleCastMember(srcMem.FullPath);
+                }
+                else
+                {
+                    dstMem.CloneFrom(srcMem);
+                }
             }
         }
     }

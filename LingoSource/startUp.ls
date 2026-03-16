@@ -1,6 +1,7 @@
-global gDisableLights, gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, gLightEProps, lvlPropOutput, gLEVEL, gLOprops, gLoadedName, gViewRender, gMassRenderL, gCameraProps, gImgXtra, gEnvEditorProps, gPEprops
+global gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, gLightEProps, lvlPropOutput, gLEVEL, gLOprops, gLoadedName, gViewRender, gMassRenderL, gCameraProps, gImgXtra, gEnvEditorProps, gPEprops
 global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer
-
+global gExport_finalDecalImage, gExport_finalImage, gExport_rainBowMask, gExport_fogImage, gExport_dpImage, gExport_flattenedGradientA, gExport_flattenedGradientB
+global gDisablePerspective, gDisableLights
 on exitFrame me
   gVersion = "v5.0.0"
   
@@ -35,13 +36,14 @@ on exitFrame me
   lvlPropOutput = FALSE
   initDRInternal()
   gFullRender = 1
-  gViewRender = 1 - getBoolConfig("Fast render")
+  gViewRender = 0 --1 - getBoolConfig("Fast render")
   DRLastTL = 1
   ldEvilCangleLayer = FALSE
   gMassRenderL = []
   gLOADPATH = []
 
-  gDisableLights = true
+  gDisableLights = 1
+  gDisablePerspective = 1
   
   gLEVEL = [#timeLimit:4800, #defaultTerrain:1, #maxFlies:10, #flySpawnRate:50, #lizards:[], #ambientSounds:[], #music:"NONE", #tags:[], #lightType:"Static", #waterDrips:1, #lightRect:rect(0,0,1040,800), #matrix:[]]
   
@@ -932,7 +934,7 @@ on exitFrame me
   gCameraProps = [#cameras:[point(gLOprops.size.locH*10, gLOprops.size.locV*10)-point(35*20, 20*20)], #selectedCamera:0, #quads:[[[0,0], [0,0], [0,0], [0,0]]], #keys:[#n:0, #d:0, #e:0, #p:0], #lastKeys:[#n:0, #d:0, #e:0, #p:0]]
   
   --Reset internals
-  repeat with mem in ["rainBowMask","blackOutImg1","blackOutImg2"] then
+  repeat with mem in ["rainBowMask","blackOutImg1","blackOutImg2","dumpImage","finalDecalImage","GradientOutput"] then
     member(mem).image = image(1, 1, 1)
   end repeat
   
@@ -944,9 +946,28 @@ on exitFrame me
     member("gradientA" & i).image =  image(1,1,1)
     member("gradientB" & i).image =  image(1,1,1)
     member("layer" & i & "dc").image =  image(1,1,1)
-    member("dumpImage").image = image(1,1,1)
-    member("finalDecalImage").image  = image(1,1,1)
-    member("GradientOutput").image  = image(1,1,1)
+    --member("finalDecalImage"& i).image  = image(1,1,1)
+    --member("GradientOutput"& i).image  = image(1,1,1)
+    --member("rainBowMask"& i).image  = image(1,1,1)
+  end repeat
+
+  gExport_finalDecalImage = []
+  gExport_rainBowMask = []
+  gExport_finalImage = []
+  gExport_fogImage = []
+  gExport_dpImage = []
+  gExport_flattenedGradientA = []
+  gExport_flattenedGradientB = []
+  gExp_tmpImage = image(1,1, 32)
+  --gDisablePerspective = true
+  repeat with q = 1 to 30 then
+    gExport_finalDecalImage.append(gExp_tmpImage)
+    gExport_rainBowMask.append(gExp_tmpImage)
+    gExport_finalImage.append(gExp_tmpImage)
+    gExport_fogImage.append(gExp_tmpImage)
+    gExport_dpImage.append(gExp_tmpImage)
+    gExport_flattenedGradientA.append(gExp_tmpImage)
+    gExport_flattenedGradientB.append(gExp_tmpImage)
   end repeat
   
   if (getBoolConfig("Large trash debug log")) then
@@ -965,23 +986,3 @@ on exitFrame me
     popupWarning("Init Issues", "Encountered issues while reading inits! See editorExceptionLog.txt for more info.")
   end if
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -256,6 +256,10 @@ public sealed unsafe partial class LingoImage
     {
         // Advanced copy features not implemented on AVX code path, they're rare so it's fine probably.
         var mustScalar = parameters.Ink == CopyPixelsInk.Darkest || parameters.Mask != null;
+        if (mustScalar)
+        {
+
+        }
         if (Avx2.IsSupported && !mustScalar)
         {
             CopyPixelsQuadCoreAvx2<TSrcData, TSampler, TDstData, TWriter>(

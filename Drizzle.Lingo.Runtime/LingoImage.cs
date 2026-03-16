@@ -13,7 +13,9 @@ namespace Drizzle.Lingo.Runtime;
 public sealed partial class LingoImage
 {
     // Image data is BGRA instead of RGBA because ImageSharp doesn't have an Rgba5551 type, only Bgra5551.
-
+    //public string Filename { get;private set; }
+    public LingoColor HashColor { get; set; }
+    public bool IsHashColored { get; set; }
     public static readonly LingoImage Pxl = MakePxl();
 
     public ImageType Type { get; }
@@ -53,6 +55,7 @@ public sealed partial class LingoImage
     {
         var span = image.GetSinglePixelSpan();
         span.CopyTo(MemoryMarshal.Cast<byte, Bgra32>(ImageBuffer));
+        
     }
 
     private LingoImage(byte[] buffer, int width, int height, ImageType type)
@@ -109,29 +112,29 @@ public sealed partial class LingoImage
         switch (Type)
         {
             case ImageType.B8G8R8A8:
-            {
-                var buf = MemoryMarshal.Cast<byte, Bgra32>(ImageBuffer);
-                ref var val = ref buf[idx];
-                return new LingoColor(val.R, val.G, val.B);
-            }
+                {
+                    var buf = MemoryMarshal.Cast<byte, Bgra32>(ImageBuffer);
+                    ref var val = ref buf[idx];
+                    return new LingoColor(val.R, val.G, val.B);
+                }
             case ImageType.B5G5R5A1:
-            {
-                var buf = MemoryMarshal.Cast<byte, Bgra5551>(ImageBuffer);
-                ref var val = ref buf[idx];
-                var rgba = new Rgba32();
-                val.ToRgba32(ref rgba);
-                return new LingoColor(rgba.R, rgba.G, rgba.B);
-            }
+                {
+                    var buf = MemoryMarshal.Cast<byte, Bgra5551>(ImageBuffer);
+                    ref var val = ref buf[idx];
+                    var rgba = new Rgba32();
+                    val.ToRgba32(ref rgba);
+                    return new LingoColor(rgba.R, rgba.G, rgba.B);
+                }
             case ImageType.Palette1:
-            {
-                var buf = MemoryMarshal.Cast<byte, int>(ImageBuffer);
-                return DoBitRead(buf, idx) ? new LingoColor(255, 255, 255) : default;
-            }
+                {
+                    var buf = MemoryMarshal.Cast<byte, int>(ImageBuffer);
+                    return DoBitRead(buf, idx) ? new LingoColor(255, 255, 255) : default;
+                }
             case ImageType.L8:
-            {
-                var val = ImageBuffer[idx];
-                return new LingoColor(val, val, val);
-            }
+                {
+                    var val = ImageBuffer[idx];
+                    return new LingoColor(val, val, val);
+                }
             default:
                 Log.Warning("getpixel(): Unimplemented image type: {Type}", Type);
                 return default;
@@ -162,34 +165,34 @@ public sealed partial class LingoImage
         switch (Type)
         {
             case ImageType.B8G8R8A8:
-            {
-                var buf = MemoryMarshal.Cast<byte, Bgra32>(ImageBuffer);
-                ref var val = ref buf[idx];
-                val = new Bgra32((byte)color.red, (byte)color.green, (byte)color.blue, 255);
-                return;
-            }
+                {
+                    var buf = MemoryMarshal.Cast<byte, Bgra32>(ImageBuffer);
+                    ref var val = ref buf[idx];
+                    val = new Bgra32((byte)color.red, (byte)color.green, (byte)color.blue, 255);
+                    return;
+                }
             case ImageType.B5G5R5A1:
-            {
-                var buf = MemoryMarshal.Cast<byte, Bgra5551>(ImageBuffer);
-                ref var val = ref buf[idx];
-                val.FromRgba32(new Rgba32((byte)color.red, (byte)color.green, (byte)color.blue, 255));
-                return;
-            }
+                {
+                    var buf = MemoryMarshal.Cast<byte, Bgra5551>(ImageBuffer);
+                    ref var val = ref buf[idx];
+                    val.FromRgba32(new Rgba32((byte)color.red, (byte)color.green, (byte)color.blue, 255));
+                    return;
+                }
             case ImageType.Palette1:
-            {
-                var buf = MemoryMarshal.Cast<byte, int>(ImageBuffer);
-                var white = color.red != 0;
+                {
+                    var buf = MemoryMarshal.Cast<byte, int>(ImageBuffer);
+                    var white = color.red != 0;
 
-                DoBitWrite(buf, idx, white);
+                    DoBitWrite(buf, idx, white);
 
-                return;
-            }
+                    return;
+                }
             case ImageType.L8:
-            {
-                ImageBuffer[idx] = color.RedByte;
+                {
+                    ImageBuffer[idx] = color.RedByte;
 
-                return;
-            }
+                    return;
+                }
             default:
                 Log.Warning("setpixel(): Unimplemented image type: {Type}", Type);
                 break;
@@ -222,7 +225,7 @@ public sealed partial class LingoImage
     {
         if (!ImageBufferShared)
             return;
-
+        
         ImageBufferShared = false;
         var prevBuf = ImageBuffer;
         ImageBuffer = GC.AllocateUninitializedArray<byte>(prevBuf.Length);
@@ -235,19 +238,38 @@ public sealed partial class LingoImage
         img.ShowImage();
     }
 
-    public static LingoImage LoadFromPath(string path)
+    public static LingoImage LoadFromPathHashColorized(string path)
     {
         try
         {
             using var fs = File.OpenRead(path);
-            return LoadFromStream(fs);
+            var img = LoadFromStream(fs);
+            var colorized = img.HashColorizedCopy(path);
+            //var namepart = Path.GetFileNameWithoutExtension(path);
+            //var namehash = namepart.Substring(0, Math.Min(namepart.Length, 8)).GetHashCode(StringComparison.InvariantCultureIgnoreCase);
+            //img.Filename = namepart;
+            //img.HashColor = LingoColor.BitUnpack(namehash);
+            return colorized;
         }
         catch (FileNotFoundException)
         {
             return LoadFromStream(null);
         }
     }
-
+    public static LingoImage LoadFromPath(string path)
+    {
+        try
+        {
+            using var fs = File.OpenRead(path);
+            var img = LoadFromStream(fs);
+           
+            return img;
+        }
+        catch (FileNotFoundException)
+        {
+            return LoadFromStream(null);
+        }
+    }
     public static LingoImage LoadFromStream(Stream? stream)
     {
         // Empty (0 byte file) images get imported into cast members by *clearing the cast member entirely*.
@@ -354,19 +376,19 @@ public sealed partial class LingoImage
         var any = false;
 
         for (var y = 0; y < Height; y++)
-        for (var x = 0; x < Width; x++)
-        {
-            var px = getpixel(x, y);
-            if (px != LingoColor.White)
+            for (var x = 0; x < Width; x++)
             {
-                minX = Math.Min(minX, x);
-                minY = Math.Min(minY, y);
-                // +1 because copy bounds are on the bottom-right of pixels.
-                maxX = Math.Max(maxX, x + 1);
-                maxY = Math.Max(maxY, y + 1);
-                any = true;
+                var px = getpixel(x, y);
+                if (px != LingoColor.White)
+                {
+                    minX = Math.Min(minX, x);
+                    minY = Math.Min(minY, y);
+                    // +1 because copy bounds are on the bottom-right of pixels.
+                    maxX = Math.Max(maxX, x + 1);
+                    maxY = Math.Max(maxY, y + 1);
+                    any = true;
+                }
             }
-        }
 
         if (!any)
             return new LingoImage(1, 1, Depth);

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
 	<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
   </PropertyGroup>
 

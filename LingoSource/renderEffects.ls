@@ -30,9 +30,11 @@ end
 on newFrame me
   -- we move onto the next row
   vertRepeater = vertRepeater + 1
+  cols: number = gLOprops.size.loch * 20
+  rows: number = gLOprops.size.locv * 20
   
   -- if there are no effects in the level, skip everything and move onto the next render stage.
-  if (gEEprops.effects.count = 0)then
+  if (gEEprops.effects.count = 0) then
     keepLooping = 0
     exit
   else if (r=0) then -- r = 0 indicates this is the first frame. (0 would be an invalid effect index) if so,
@@ -42,7 +44,7 @@ on newFrame me
   end if
   --  if we've rendered all the rows on this screen, and not moving onto the next screen, or we've reached the end of the screen,
   efcsc = gEEprops.effects[r].crossScreen
-  if ( (vertRepeater > 60) and (efcsc = 0) ) or ( (vertRepeater > gLOprops.size.locV) and (efcsc = 1)) then
+  if ( (vertRepeater > rows) and (efcsc = 0) ) or ( (vertRepeater > gLOprops.size.locV) and (efcsc = 1)) then
     me.exitEffect() -- then stop rendering this effect,
     r = r + 1       -- and move onto the next one
     
@@ -60,7 +62,7 @@ on newFrame me
     sprite(59).locV = vertRepeater*20 -- i think this moves that big line across the screen that shows where the effect is being applied? no clue.
     
     -- render all of the tiles within this row.
-    repeat with q = 1 to 100
+    repeat with q = 1 to cols
       q2 = q
       c2 = vertRepeater
       if (q2 > 0) then
@@ -457,7 +459,8 @@ on initEffect me
       exit repeat
     end if
   end repeat
-  
+  cols: number = gLOprops.size.loch * 20
+  rows: number = gLOprops.size.locv * 20
   effectIn3D = FALSE
   gRotOp = FALSE
   skyRootsFix = 0
@@ -522,116 +525,23 @@ on initEffect me
   
   case effectr.nm of
     "BlackGoo":
-      cols = gLOprops.size.loch
-      rows = gLOprops.size.locv
-      
-      member("blackOutImg1").image = image(cols*20, rows*20, 32)
-      blk1 = member("blackOutImg1").image
-      blk1.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      member("blackOutImg2").image = image(cols*20, rows*20, 32)
-      blk2 = member("blackOutImg2").image
-      blk2.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      sprite(57).visibility = 1
-      sprite(58).visibility = 1
-      
-      global gRenderCameraTilePos, gRenderCameraPixelPos
-      
-      repeat with q = 1 to cols
-        repeat with c = 1 to rows
-          q2 = q
-          c2 = c
-          if(q2 < 1)or(q2 > gLOprops.size.locH)or(c2 < 1)or(c2 > gLOprops.size.locV)then
-            blk1.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
-            blk2.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
-          end if
-        end repeat
-      end repeat
-      
-      blobImg = member("blob").image
-      rct = blobImg.rect
-      repeat with q2 = 1 to cols then
-        repeat with c2 = 1 to rows then
-          
-            tile = point(q2,c2)
-            
-            if (effectr.mtrx[tile.locH][tile.locV] = 0) then
-              sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)
-              
-              repeat with d = 1 to 10
-                repeat with e = 1 to 10
-                  ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
-                  blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
-                  blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
-                  -- end if 
-                end repeat
-              end repeat
-            else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
-              ps = giveMiddleOfTile(point(q2,c2))
-              blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-              blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-              blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-              blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-            end if
-          
-        end repeat
-      end repeat
-      
+      --member("blackOutImg1").image = image(cols*20, rows*20, 32)
+      --blk1 = member("blackOutImg1").image
+      --blk1.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
+      --member("blackOutImg2").image = image(cols*20, rows*20, 32)
+      --blk2 = member("blackOutImg2").image
+      --blk2.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
+      --sprite(57).visibility = 1
+      --sprite(58).visibility = 1
     "Super BlackGoo":
-      cols: number = gLOprops.size.loch * 20
-      row: number = gLOprops.size.locv * 20
-      
-      member("blackOutImg1").image = image(cols*20, rows*20, 32)
-      blk1 = member("blackOutImg1").image
-      member("blackOutImg1").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      member("blackOutImg2").image = image(cols*20, rows*20, 32)
-      blk2 = member("blackOutImg2").image
-      member("blackOutImg2").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      sprite(57).visibility = 1
-      sprite(58).visibility = 1
-      
-      global gRenderCameraTilePos, gRenderCameraPixelPos
-      
-      repeat with q = 1 to cols
-        repeat with c = 1 to rows
-          q2 = q
-          c2 = c
-          if(q2 < 1)or(q2 > gLOprops.size.locH)or(c2 < 1)or(c2 > gLOprops.size.locV)then
-            blk1.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
-            blk2.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
-          end if
-        end repeat
-      end repeat
-      
-      blobImg = member("blob").image
-      rct = blobImg.rect
-      repeat with q2 = 1 to cols
-        repeat with c2 = 1 to rows
-          
-          tile = point(q2,c2)
-          
-          if (gEEprops.effects[r].mtrx[tile.locH][tile.locV] = 0) then
-            sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)
-            
-            repeat with d = 1 to 10
-              repeat with e = 1 to 10
-                ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
-                -- if member("layer0").image.getPixel(ps) = color(255, 255, 255) then
-                blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
-                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
-                -- end if 
-              end repeat
-            end repeat
-          else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
-            ps = giveMiddleOfTile(point(q2,c2))
-            blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-            blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-            blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
-            blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
-          end if
-          
-        end repeat
-      end repeat
-      
+      --member("blackOutImg1").image = image(cols*20, rows*20, 32)
+      --blk1 = member("blackOutImg1").image
+      --member("blackOutImg1").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
+      --member("blackOutImg2").image = image(cols*20, rows*20, 32)
+      --blk2 = member("blackOutImg2").image
+      --member("blackOutImg2").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
+      --sprite(57).visibility = 1
+      --sprite(58).visibility = 1
     "Fungi Flowers":
       
       l = [2,3,4,5]
@@ -782,7 +692,7 @@ end
 
 on exitEffect me
   cols: number = gLOprops.size.loch * 20
-  row: number = gLOprops.size.locv * 20
+  rows: number = gLOprops.size.locv * 20
   case gEEprops.effects[r].nm of
     "BlackGoo":
       

@@ -156,7 +156,7 @@ on loadLevel me, lvlName, fullPath
       end if
     end repeat
     gLoadedName = chars(lvlName, lastBackSlash+1, lvlName.length)
-    put gLoadedName
+    --put gLoadedName
   else
     
     gLoadedName = lvlName
@@ -171,19 +171,19 @@ on loadLevel me, lvlName, fullPath
   
   
   
-  l1 = value(l2.line[1])
-  gLEProps.matrix = l1
-  l1 = value(l2.line[2])
-  gTEProps = l1
-  l1 = value(l2.line[3])
-  gEEprops = l1
-  l1 = value(l2.line[4])
-  gLightEProps = l1
-  l1 = value(l2.line[5])
-  gLEVEL = l1
-  l1 = value(l2.line[6])
+  --l1 = value(l2.line[1])
+  gLEProps.matrix = value(l2.line[1])
+  --l1 = value(l2.line[2])
+  gTEProps = value(l2.line[2])
+  --l1 = value(l2.line[3])
+  gEEprops = value(l2.line[3])
+  --l1 = value(l2.line[4])
+  gLightEProps = value(l2.line[4])
+  --l1 = value(l2.line[5])
+  gLEVEL = value(l2.line[5])
+  --l1 = value(l2.line[6])
   
-  gLOprops = l1
+  gLOprops = value(l2.line[6])
   
   
   
@@ -206,7 +206,9 @@ on loadLevel me, lvlName, fullPath
     gLOprops.addProp(#extraTiles, [1,1,1,3])
   end if
   
-  gLOprops.pals = [[#detCol:color(255, 0, 0)]]
+  if gLOprops.findpos(#pals) = void then
+    gLOprops.pals = [[#detCol:color(255, 0, 0)]]
+  end if
   
   if value(l2.line[7]) = void then
     gCameraProps.cameras = [point(gLOprops.size.locH*10, gLOprops.size.locV*10)-point(35*20, 20*20)]
@@ -250,14 +252,14 @@ on loadLevel me, lvlName, fullPath
     img = image(wantedRect.width, wantedRect.height, 1)
     img.copyPixels(member("lightImage").image, rect(wantedRect.width/2, wantedRect.height/2, wantedRect.width/2, wantedRect.height/2) + rect(-member("lightImage").rect.width/2, -member("lightImage").image.rect.height/2, member("lightImage").image.rect.width/2, member("lightImage").image.rect.height/2), member("lightImage").image.rect)
     member("lightImage").image = img
-    put "Adapted light rect"  
+    --put "Adapted light rect"  
   end if
   
   global gLASTDRAWWASFULLANDMINI
   gLASTDRAWWASFULLANDMINI = 0
   
   
-  put pth & "/" & lvlName & ".png"
+  --put pth & "/" & lvlName & ".png"
   
 end
 

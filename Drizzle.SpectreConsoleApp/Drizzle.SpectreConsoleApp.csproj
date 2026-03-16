@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.53.0" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.53.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Drizzle.ConsoleApp\Drizzle.ConsoleApp.csproj" />
+    <ProjectReference Include="..\Drizzle.Editor\Drizzle.Editor.csproj" />
+    <ProjectReference Include="..\Drizzle.Lingo.Runtime\Drizzle.Lingo.Runtime.csproj" />
+    <ProjectReference Include="..\Drizzle.Logic\Drizzle.Logic.csproj" />
+    <ProjectReference Include="..\Drizzle.Ported\Drizzle.Ported.csproj" />
+  </ItemGroup>
+
+</Project>

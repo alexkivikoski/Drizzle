@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Drizzle.Lingo.Runtime;
@@ -15,6 +15,7 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
 
     // NOTE: This is fired on the render thread, use fancy Rx ObserveOn if you use this!
     public event Action<RenderStatus>? StatusChanged;
+    public event Action<RenderStageCompleted>? StageCompleted;
     public event Action<RenderPreview>? PreviewSnapshot;
 
     // That's cam, final image.
@@ -27,7 +28,7 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
     private bool _isPaused;
     private bool _previewRequested;
 
-    public LevelRenderer(LingoRuntime runtime, RenderStage? pauseOnStage, int? singleCamera=null)
+    public LevelRenderer(LingoRuntime runtime, RenderStage? pauseOnStage, int? singleCamera = null)
     {
         _pauseOnStage = pauseOnStage;
         _singleCamera = singleCamera;
@@ -95,7 +96,8 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
 
     private void SendUpdateStatus(RenderStageStatus stageStatus)
     {
-        StatusChanged?.Invoke(new RenderStatus(_cameraIndex, _countCamerasDone, _isPaused, stageStatus));
+        //StatusChanged?.Invoke(new RenderStatus(_cameraIndex, _countCamerasDone, _isPaused, stageStatus));
+        StatusChanged?.Invoke(new RenderStatus(_currentFrame, _framesTotal, _isPaused, stageStatus));
     }
 
     private void SendPreview(RenderPreview preview)
@@ -108,6 +110,10 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
     private void RenderStartFrame(RenderStage stage)
     {
         RenderStartFrame(new RenderStageStatus(stage));
+    }
+    private void NotifyCompleted(RenderStage stage)
+    {
+        StageCompleted?.Invoke(new RenderStageCompleted(stage));
     }
 
     private bool ShouldSendPreview()

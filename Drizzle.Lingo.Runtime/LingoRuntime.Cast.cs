@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +15,9 @@ namespace Drizzle.Lingo.Runtime;
 public partial class LingoRuntime
 {
     private static readonly bool LoadCastParallel = true;
+    
 
-    private static readonly Regex CastPathRegex = new Regex(@"([^_]+)_(\d+)_(.+)?\.([a-z]*)");
+    public static readonly Regex CastPathRegex = new Regex(@"([^_]+)_(\d+)_(.+)?\.([a-z]*)");
 
     private static readonly string CastPath;
 
@@ -101,6 +104,30 @@ public partial class LingoRuntime
         var sw = Stopwatch.StartNew();
         var files = Directory.EnumerateFiles(CastPath);
 
+        string[] membersToDuplicateForEachLayer = ["rainBowMask.png", "finalDecalImage.png", "finalImage.png", "shadowImage.png", "finalImage.png", "flattenedGradientA.png", "flattenedGradientB.png", "fogImage.png", "dpImage.png"];
+        bool createdAny = false;
+        foreach (var s in membersToDuplicateForEachLayer)
+        {
+            if (files.FirstOrDefault(f=>f.Contains(s)) is string f)
+            {
+                for (int i = 0; i < 30; i++)
+                {
+                    var withNum = CastPath + "/" + s.Replace(".png", i + ".png");
+                    if (!File.Exists(withNum))
+                    {
+                        File.Copy(f, withNum);
+                        createdAny = true;
+                    }
+                }
+            } else
+            {
+
+            }
+        }
+        if (createdAny)
+        {
+            files = Directory.EnumerateFiles(CastPath);
+        }
         var count = 0;
         if (LoadCastParallel)
         {
@@ -113,6 +140,7 @@ public partial class LingoRuntime
                 DoWork(s);
             }
         }
+        
 
         void DoWork(string s)
         {
@@ -198,6 +226,26 @@ public partial class LingoRuntime
 
                 if (!_castMemberNameIndex.ContainsKey(member.name))
                     _castMemberNameIndex.Add(member.name, member);
+            }
+        }
+
+        _castMemberNameIndexDirty = false;
+    }
+
+    public void RemoveHashColors()
+    {
+        _castMemberNameIndex.Clear();
+
+        foreach (var castLib in _castLibs)
+        {
+            for (var i = 0; i < castLib.NumMembers; i++)
+            {
+                var member = castLib.GetMember(i);
+                
+                if (member?.HashColoredImage != null && member?.FullPath != null) {
+                    member.HashColoredImage = null;
+                    _ = LoadSingleCastMember(member.FullPath);
+                }
             }
         }
 

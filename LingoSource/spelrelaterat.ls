@@ -59,11 +59,13 @@ on withinBoundsOfLevel(pos)
 end
 
 on depthPnt(pnt, dpt)
-  global ldEvilCangleLayer, gLOprops
-  cols: number = gLOprops.size.loch * 20
-  rows: number = gLOprops.size.locv * 20
-  if ldEvilCangleLayer then dpt = dpt + 30
-  return (pnt - point(cols / 2, rows / 3)) / ((10 + dpt * 0.025) * 0.1) + point(cols / 2, rows / 3)
+  return pnt
+  -- disabled for voxels!
+    --global ldEvilCangleLayer, gLOprops
+    --cols: number = gLOprops.size.loch * 20
+    --rows: number = gLOprops.size.locv * 20
+    --if ldEvilCangleLayer then dpt = dpt + 30
+    --return (pnt - point(cols / 2, rows / 3)) / ((10 + dpt * 0.025) * 0.1) + point(cols / 2, rows / 3)
 end
 
 on seedForTile(tile: point, effectSeed: number)

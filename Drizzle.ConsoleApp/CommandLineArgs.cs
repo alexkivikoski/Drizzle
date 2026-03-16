@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using C = System.Console;
 
 namespace Drizzle.ConsoleApp;
@@ -20,7 +22,36 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
             while (enumerator.MoveNext())
             {
                 var arg = enumerator.Current;
-                if (arg == "--parallelism")
+                if (arg == "--region" && levels.Count == 1)
+                {
+                    var regionDir = levels[0];
+                    if (Directory.Exists(regionDir))
+                    {
+                        levels = new List<string>();
+                        foreach (var f in Directory.EnumerateFiles(regionDir))
+                        {
+                            if (Path.GetExtension(f) == ".txt" && Path.GetFileName(f).Contains("_"))
+                            {
+                                levels.Add(f);
+                            }
+                        }
+                    } else
+                    {
+                        C.WriteLine("Region directory not found");
+                    }
+                }
+                else if (arg == "--limit")
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        C.WriteLine("Expected level count limit");
+                        return null;
+                    }
+
+                    var lim = int.Parse(enumerator.Current);
+                    levels = levels.Take(lim).ToList();
+                }
+                else if (arg == "--parallelism")
                 {
                     if (!enumerator.MoveNext())
                     {

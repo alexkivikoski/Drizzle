@@ -8,6 +8,8 @@ namespace Drizzle.Lingo.Runtime;
 
 public sealed partial class LingoImage
 {
+
+
     public LingoImage makesilhouette(LingoNumber invertedI)
     {
         if (Depth != 32 && Depth != 1)

@@ -1,4 +1,5 @@
-global c, lightRects, gLevel, gImgXtra, gLoadedName, gCurrentRenderCamera, lvlPropOutput, DRFinalImage, DRFogImage, DRDpImage, DRShadowImage, DRRainbowMask, DRFlattenedGradientA, DRFlattenedGradientB, DRFinalDecalImage, DRPxl
+global c, lightRects, gLevel, gImgXtra, gLoadedName, gCurrentRenderCamera, lvlPropOutput, DRFinalImage, DRFogImage, DRDpImage, DRShadowImage, DRRainbowMask, DRFlattenedGradientA, DRFlattenedGradientB, DRFinalDecalImage, DRPxl, gLOprops
+
 
 on exitFrame me
   --  if checkMinimize() then
@@ -19,11 +20,13 @@ on exitFrame me
   DRFlattenedGradientB = member("flattenedGradientB").image
   DRFinalDecalImage = member("finalDecalImage").image
   if (lvlPropOutput = TRUE) then
-    member("GradientOutput").image = image(2800, 801, 32)
+    cols: number = gLOprops.size.loch * 20
+    rows: number = gLOprops.size.locv * 20
+    member("GradientOutput").image = image(cols * 2, rows + 1, 32)
     gradOut = member("GradientOutput").image
-    gradOut.copyPixels(DRFinalImage, rect(0, 1, 1400, 801), DRFinalImage.rect, {#ink:36})
-    gradOut.copyPixels(DRFlattenedGradientA, rect(1400, 1, 2800, 801), DRFlattenedGradientA.rect, {#ink:36})
-    gradOut.copyPixels(DRFlattenedGradientB, rect(1400, 1, 2800, 801), DRFlattenedGradientB.rect, {#ink:36}) 
+    gradOut.copyPixels(DRFinalImage, rect(0, 1, cols, rows + 1), DRFinalImage.rect, {#ink:36})
+    gradOut.copyPixels(DRFlattenedGradientA, rect(cols, 1, cols * 2, rows + 1), DRFlattenedGradientA.rect, {#ink:36})
+    gradOut.copyPixels(DRFlattenedGradientB, rect(cols, 1, cols * 2, rows + 1), DRFlattenedGradientB.rect, {#ink:36}) 
     gradOut.copyPixels(DRPxl, rect(0, 0, 1, 1), DRPxl.rect, {#color:color(0, 0, 0), #ink:36}) 
     props = ["image": gradOut, "filename":_movie.path&"Props/"&gLoadedName & "_" & gCurrentRenderCamera & "_Prop.png"]
     ok = gImgXtra.ix_saveImage(props)

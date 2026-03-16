@@ -8,10 +8,12 @@ public sealed partial class CastMember
 {
     private readonly LingoCastLib _castLib;
     private string? _name;
+    public string? FullPath;
     public LingoRuntime Runtime { get; }
     public int Number { get; }
 
     public CastMemberType Type { get; set; }
+    
 
     public string? name
     {
@@ -48,6 +50,7 @@ public sealed partial class CastMember
         Type = CastMemberType.Empty;
         _text = "";
         _image = null;
+        _hashColoredImage = null;
     }
 
     public void importfileinto(string path, LingoPropertyList? propList = null)
@@ -57,7 +60,14 @@ public sealed partial class CastMember
         var ext = Path.GetExtension(path)[1..];
         ImportFile(fullPath, ext, name);
     }
-
+    public void ReloadImage()
+    {
+        if (FullPath != null)
+        {
+            erase();
+            ImportFileImplBitmap(FullPath);
+        }
+    }
     public void ImportFile(string fullPath, string ext, string? name)
     {
         erase();
