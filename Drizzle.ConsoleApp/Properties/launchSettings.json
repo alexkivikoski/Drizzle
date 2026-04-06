@@ -2,7 +2,7 @@
   "profiles": {
     "Drizzle.ConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\SL --region --limit 15"
+      "commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\OE --region"
     }
   }
 }

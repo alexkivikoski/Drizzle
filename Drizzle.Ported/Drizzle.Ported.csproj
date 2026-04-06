@@ -3,6 +3,7 @@
     <NoWarn>CS8981</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
+	<TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

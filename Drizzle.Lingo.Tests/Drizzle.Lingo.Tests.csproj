@@ -3,6 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
 	<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
+	<TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 global gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, gLightEProps, lvlPropOutput, gLEVEL, gLOprops, gLoadedName, gViewRender, gMassRenderL, gCameraProps, gImgXtra, gEnvEditorProps, gPEprops
 global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer
 global gExport_finalDecalImage, gExport_finalImage, gExport_rainBowMask, gExport_fogImage, gExport_dpImage, gExport_flattenedGradientA, gExport_flattenedGradientB
-global gDisablePerspective, gDisableLights
+global gDisablePerspective, gDisableLights, gExportEnabled
 on exitFrame me
   gVersion = "v5.0.0"
   
@@ -42,8 +42,10 @@ on exitFrame me
   gMassRenderL = []
   gLOADPATH = []
 
-  gDisableLights = 1
+  gDisableLights = 0
   gDisablePerspective = 1
+  gExportEnabled = 0
+  gDisableBlackGoo = 0
   
   gLEVEL = [#timeLimit:4800, #defaultTerrain:1, #maxFlies:10, #flySpawnRate:50, #lizards:[], #ambientSounds:[], #music:"NONE", #tags:[], #lightType:"Static", #waterDrips:1, #lightRect:rect(0,0,1040,800), #matrix:[]]
   

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Drizzle.Lingo.Runtime;
@@ -6,10 +7,10 @@ using Drizzle.Ported;
 
 namespace Drizzle.Logic.Rendering;
 
-public sealed partial class LevelRenderer : ILingoRuntimeManager
+public  partial class LevelRenderer : ILingoRuntimeManager, IDisposable
 {
     // This partial contains wrapping code around the rendering code to handle multi-threaded control and such.
-    private readonly LingoRuntime _runtime;
+    private  LingoRuntime _runtime;
 
     private MovieScript Movie => (MovieScript)_runtime.MovieScriptInstance;
 
@@ -27,6 +28,7 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
     private RenderStage _stage;
     private bool _isPaused;
     private bool _previewRequested;
+    private bool disposedValue;
 
     public LevelRenderer(LingoRuntime runtime, RenderStage? pauseOnStage, int? singleCamera = null)
     {
@@ -54,6 +56,7 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
 
     private void RenderStartFrame(RenderStageStatus stageStatus)
     {
+        return;
         if (_stage != stageStatus.Stage && stageStatus.Stage == _pauseOnStage)
             _isPaused = true;
 
@@ -168,5 +171,35 @@ public sealed partial class LevelRenderer : ILingoRuntimeManager
         })).AsTask().Wait();
 
         return tcs.Task;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                this._runtime = null;
+                // TODO: dispose managed state (managed objects)
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            disposedValue = true;
+        }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~LevelRenderer()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

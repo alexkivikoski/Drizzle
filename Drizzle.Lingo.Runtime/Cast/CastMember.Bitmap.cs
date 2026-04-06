@@ -76,7 +76,7 @@ public partial class CastMember
     {
         FullPath = path;
         _image = LingoImage.LoadFromPath(path).Trimmed();
-        if (!ExcludedFromHashColor.Any(s => path.Contains(s)))
+        if (Runtime.UseHashColoredTextures && !ExcludedFromHashColor.Any(s => path.Contains(s)))
         {
             _hashColoredImage = _image.duplicate();
             _hashColoredImage = _hashColoredImage.HashColorizedCopy(path); //LingoImage.LoadFromPathHashColorized(path).Trimmed();

@@ -1,5 +1,5 @@
 global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
-global blobSize, growOnWalls, needsAttach
+global blobSize, growOnWalls, needsAttach, gDisableErosion, gDisableBlackGoo
 
 
 on exitFrame(me)
@@ -24,14 +24,23 @@ on exitFrame(me)
   end if
 end
 
+on processTile me, effectr, q2, c2
+  type effectr: number
+  type q2: number
+  type c2: number
+  -- handle loop outside lingo code
+  -- start with r = 1, loop trough effects -> rows -> cols
+  me.effectOnTile(q2, c2, q2, c2, effectr)
+end
+
 -- Presenting: the mad ramblings of cappin
 
 -- do this once per frame
 on newFrame me
   -- we move onto the next row
   vertRepeater = vertRepeater + 1
-  cols: number = gLOprops.size.loch * 20
-  rows: number = gLOprops.size.locv * 20
+  cols: number = gLOprops.size.loch
+  rows: number = gLOprops.size.locv
   
   -- if there are no effects in the level, skip everything and move onto the next render stage.
   if (gEEprops.effects.count = 0) then
@@ -62,22 +71,22 @@ on newFrame me
     sprite(59).locV = vertRepeater*20 -- i think this moves that big line across the screen that shows where the effect is being applied? no clue.
     
     -- render all of the tiles within this row.
-    repeat with q = 1 to cols
+    repeat with q = 1 to gLOprops.size.locH
       q2 = q
       c2 = vertRepeater
-      if (q2 > 0) then
-        if (q2 <= gLOprops.size.locH) then
-          if (c2 > 0) then
-            if (c2 <= gLOprops.size.locV) then
-              me.effectOnTile(q, vertRepeater, q2, c2, effectr)
-            end if
-          end if
+      
+      
+      if (c2 > 0) then
+        if (c2 <= gLOprops.size.locV) then
+          me.effectOnTile(q, vertRepeater, q2, c2, effectr)
         end if
       end if
+      
+      
     end repeat
   else -- otherwise...
     -- uhh just do the same thing i guess??
-    repmcam = vertRepeater - gRenderCameraTilePos.locV
+    repmcam = vertRepeater
     sprite(59).locV = repmcam * 20
     repeat with q2 = 1 to gLOprops.size.locH
       me.effectOnTile(q2, repmcam, q2, vertRepeater, effectr)
@@ -101,7 +110,9 @@ on effectOnTile me, q, c, q2, c2, effectr
     case efname of
         -- Standard effects
       "Slime", "Rust", "Barnacles", "Erode", "Melt", "Roughen", "SlimeX3", "Destructive Melt", "Super Melt", "Super Erode", "DecalsOnlySlime", "Ultra Super Erode", "Colored Barnacles", "Sand", "Impacts", "Fat Slime":
-        script("StandardEffects").applyStandardErosion(q,c,0, efname, effectr)
+        if c < 1 or gDisableErosion < 1 then
+          script("StandardEffects").applyStandardErosion(q,c,0, efname, effectr)
+        end if
       "Root Grass", "Cacti", "Rubble", "Rain Moss", "Dandelions", "Seed Pods", "Grass", "Horse Tails", "Circuit Plants", "Feather Plants", "Storm Plants", "Colored Rubble", "Reeds", "Lavenders", "Seed Grass", "Hyacinths", "Orb Plants", "Lollipop Mold", "Og Grass":
         script("StandardEffects").applyStandardPlant(q,c,0, efname)
       "Sprawlbush", "featherFern", "Fungus Tree", "Head Lamp":
@@ -172,7 +183,9 @@ on effectOnTile me, q, c, q2, c2, effectr
         end if
         
       "BlackGoo":
-        script("JoarEffects").applyBlackGoo(q,c,0)
+        if gDisableBlackGoo < 1 then 
+          script("JoarEffects").applyBlackGoo(q,c,0)
+        end if
       "DarkSlime":
         script("JoarEffects").applyDarkSlime(q,c, effectr)
       "Restore As Scaffolding", "Restore As Pipes":
@@ -265,7 +278,9 @@ on effectOnTile me, q, c, q2, c2, effectr
         end if
       "Clovers":
         script("LBEffects").applyResRoots(q,c)
-        script("StandardEffects").applyStandardErosion(q,c,0, efname, effectr)
+        if c < 1 or gDisableErosion < 1 then
+          script("StandardEffects").applyStandardErosion(q,c,0, efname, effectr)
+        end if
         
       "Colored Wires":
         if (gdIndLayer = "C") then
@@ -441,7 +456,7 @@ on effectOnTile me, q, c, q2, c2, effectr
       otherwise:
         -- Custom effects system
         if (gCustomEffects.getPos(efname) > 0) then
-          script("StandardEffects").ApplyCustomEffect(q, c, effectr, efname)
+          script("InitEffects").ApplyCustomEffect(q, c, effectr, efname)
         end if
     end case
     the randomSeed = savSeed
@@ -525,23 +540,98 @@ on initEffect me
   
   case effectr.nm of
     "BlackGoo":
-      --member("blackOutImg1").image = image(cols*20, rows*20, 32)
-      --blk1 = member("blackOutImg1").image
-      --blk1.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      --member("blackOutImg2").image = image(cols*20, rows*20, 32)
-      --blk2 = member("blackOutImg2").image
-      --blk2.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      --sprite(57).visibility = 1
-      --sprite(58).visibility = 1
+      if gDisableBlackGoo < 1 then 
+        member("blackOutImg1").image = image(cols, rows, 32)
+        blk1 = member("blackOutImg1").image
+        blk1.copyPixels(DRPxl, rect(0,0,cols, rows), rect(0,0,1,1), {#color:255})
+        member("blackOutImg2").image = image(cols, rows, 32)
+        blk2 = member("blackOutImg2").image
+        blk2.copyPixels(DRPxl, rect(0,0,cols, rows), rect(0,0,1,1), {#color:255})
+        sprite(57).visibility = 1
+        sprite(58).visibility = 1
+
+        -- Disable masking area outside camera view
+        --repeat with q = 1 to 100
+        --  repeat with c = 1 to 60
+        --    q2 = q + gRenderCameraTilePos.locH
+        --    c2 = c + gRenderCameraTilePos.locV
+        --    if(q2 < 1)or(q2 > gLOprops.size.locH)or(c2 < 1)or(c2 > gLOprops.size.locV)then
+        --      blk1.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
+        --      blk2.copyPixels(DRPxl, rect((q-1)*20, (c-1)*20, q*20, c*20), rect(0,0,1,1), {#color:color(255, 255, 255)})
+        --    end if
+        --  end repeat
+        --end repeat
+          
+        blobImg = member("blob").image
+        rct = blobImg.rect
+        repeat with q2 = 1 to gLOprops.size.locH then
+          repeat with c2 = 1 to gLOprops.size.locV then
+            
+              tile = point(q2,c2)
+              
+              if (effectr.mtrx[tile.locH][tile.locV] = 0) then
+                sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+                
+                repeat with d = 1 to 10
+                  repeat with e = 1 to 10
+                    ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
+                    blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
+                    blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
+                    -- end if 
+                  end repeat
+                end repeat
+              else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
+                ps = giveMiddleOfTile(point(q2,c2))--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+                blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
+                blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
+              end if
+            
+          end repeat
+        end repeat
+      end if
     "Super BlackGoo":
-      --member("blackOutImg1").image = image(cols*20, rows*20, 32)
-      --blk1 = member("blackOutImg1").image
-      --member("blackOutImg1").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      --member("blackOutImg2").image = image(cols*20, rows*20, 32)
-      --blk2 = member("blackOutImg2").image
-      --member("blackOutImg2").image.copyPixels(DRPxl, rect(0,0,cols*20, rows*20), rect(0,0,1,1), {#color:255})
-      --sprite(57).visibility = 1
-      --sprite(58).visibility = 1
+      if gDisableBlackGoo < 1 then
+        member("blackOutImg1").image = image(cols, rows, 32)
+        blk1 = member("blackOutImg1").image
+        member("blackOutImg1").image.copyPixels(DRPxl, rect(0,0,cols, rows), rect(0,0,1,1), {#color:255})
+        member("blackOutImg2").image = image(cols, rows, 32)
+        blk2 = member("blackOutImg2").image
+        member("blackOutImg2").image.copyPixels(DRPxl, rect(0,0,cols, rows), rect(0,0,1,1), {#color:255})
+        sprite(57).visibility = 1
+        sprite(58).visibility = 1
+        
+        blobImg = member("blob").image
+        rct = blobImg.rect
+        repeat with q2 = 1 to gLOprops.size.locH
+          repeat with c2 = 1 to gLOprops.size.locV
+            
+              tile = point(q2,c2)+gRenderCameraTilePos
+              
+              if (gEEprops.effects[r].mtrx[tile.locH][tile.locV] = 0) then
+                sPnt = giveMiddleOfTile(point(q2,c2))+point(-10,-10)--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+                
+                repeat with d = 1 to 10
+                  repeat with e = 1 to 10
+                    ps = point(sPnt.locH + d*2, sPnt.locV + e*2)
+                    -- if member("layer0").image.getPixel(ps) = color(255, 255, 255) then
+                    blk1.copyPixels(blobImg, rect(ps.locH-6-random(random(11)),ps.locV-6-random(random(11)),ps.locH+6+random(random(11)),ps.locV+6+random(random(11))), rct, {#color:0, #ink:36})
+                    blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(14)),ps.locV-7-random(random(14)),ps.locH+7+random(random(14)),ps.locV+7+random(random(14))), rct, {#color:0, #ink:36})
+                    -- end if 
+                  end repeat
+                end repeat
+              else if ((gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(5) > 0)or(gLEProps.matrix[tile.locH][tile.locV][1][2].getPos(4) > 0))and(gLEProps.matrix[tile.locH][tile.locV][2][1]=1) then
+                ps = giveMiddleOfTile(point(q2,c2))--+gRenderCameraPixelPos--gRenderCameraTilePos-gRenderCameraPixelPos
+                blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
+                blk1.copyPixels(blobImg, rect(ps.locH-4-random(random(9)),ps.locV-4-random(random(9)),ps.locH+4+random(random(9)),ps.locV+4+random(random(9))), rct, {#color:0, #ink:36})
+                blk2.copyPixels(blobImg, rect(ps.locH-7-random(random(9)),ps.locV-7-random(random(9)),ps.locH+7+random(random(9)),ps.locV+7+random(random(9))), rct, {#color:0, #ink:36})
+              end if
+            
+          end repeat
+        end repeat
+      end if
     "Fungi Flowers":
       
       l = [2,3,4,5]
@@ -695,29 +785,29 @@ on exitEffect me
   rows: number = gLOprops.size.locv * 20
   case gEEprops.effects[r].nm of
     "BlackGoo":
-      
-      lr0 = member("layer0").image
-      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols*20, rows*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(0, 255, 0)})
-      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols*20, rows*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(255, 0, 0)})
-      
-      
-      member("blackOutImg1").image = image(1, 1, 1)
-      -- member("blackOutImg2").image = image(1, 1, 1)
-      sprite(58).visibility = 0
-      sprite(57).visibility = 0
-      
+      if gDisableBlackGoo < 1 then
+        lr0 = member("layer0").image
+        lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols, rows), rect(0,0,cols, rows), {#ink:36, #color:color(0, 255, 0)})
+        lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols, rows), rect(0,0,cols, rows), {#ink:36, #color:color(255, 0, 0)})
+        
+        
+        member("blackOutImg1").image = image(1, 1, 1)
+        -- member("blackOutImg2").image = image(1, 1, 1)
+        sprite(58).visibility = 0
+        sprite(57).visibility = 0
+      end if
     "Super BlackGoo":
-      
-      lr0 = member("layer0").image
-      lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols*20, cols*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(0, 255, 0)})
-      lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols*20, cols*20), rect(0,0,cols*20, rows*20), {#ink:36, #color:color(255, 0, 0)})
-      
-      
-      member("blackOutImg1").image = image(1, 1, 1)
-      -- member("blackOutImg2").image = image(1, 1, 1)
-      sprite(58).visibility = 0
-      sprite(57).visibility = 0
-      
+      if gDisableBlackGoo < 1 then
+        lr0 = member("layer0").image
+        lr0.copyPixels(member("blackOutImg1").image, rect(0,0,cols, rows), rect(0,0,cols, rows), {#ink:36, #color:color(0, 255, 0)})
+        lr0.copyPixels(member("blackOutImg2").image, rect(0,0,cols, rows), rect(0,0,cols, rows), {#ink:36, #color:color(255, 0, 0)})
+        
+        
+        member("blackOutImg1").image = image(1, 1, 1)
+        -- member("blackOutImg2").image = image(1, 1, 1)
+        sprite(58).visibility = 0
+        sprite(57).visibility = 0
+      end if
     "DaddyCorruption":
       global daddyCorruptionHoles
       repeat with i = 1 to daddyCorruptionHoles.count then

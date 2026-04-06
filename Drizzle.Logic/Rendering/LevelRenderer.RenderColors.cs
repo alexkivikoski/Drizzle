@@ -3,7 +3,7 @@ using Drizzle.Lingo.Runtime;
 
 namespace Drizzle.Logic.Rendering;
 
-public sealed partial class LevelRenderer
+public partial class LevelRenderer
 {
     private static readonly Vector2i[] FogDisplacements =
     {

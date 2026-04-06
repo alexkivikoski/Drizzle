@@ -1,5 +1,5 @@
 global c, dptsL, fogDptsL, gLOprops, gViewRender, keepLooping, gCustomColor, DRFinalImage, DRFogImage, DRDpImage, DRShadowImage, DRRainbowMask, DRFlattenedGradientA, DRFlattenedGradientB, DRFinalDecalImage, gAnyDecals, gDecalColors, gPEcolors, grimeActive, grimeOnGradients, bkgFix
-global gExport_finalDecalImage, gExport_finalImage, gExport_rainBowMask, gExport_fogImage, gExport_dpImage, gExport_flattenedGradientA, gExport_flattenedGradientB
+global gExport_finalDecalImage, gExport_finalImage, gExport_rainBowMask, gExport_fogImage, gExport_dpImage, gExport_flattenedGradientA, gExport_flattenedGradientB, gExportEnabled
 on exitFrame me
   if checkMinimize() then
     _player.appMinimize()

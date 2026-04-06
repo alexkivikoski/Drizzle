@@ -126,3 +126,6 @@ type gExport_flattenedGradientB:  list
 type gExport_color:               list
 type gDisablePerspective:         number
 type gDisableLights:              number
+type gExportEnabled:              number
+type gDisableErosion:             number
+type gDisableBlackGoo:            number

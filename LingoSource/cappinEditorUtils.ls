@@ -7,8 +7,8 @@ on randomRangeInclusive minimum, maximum
 end
 
 on offsetQuad quadToOffset, offsetVector
-  repeat with vertIndex = 1 to 4
-    quadToOffset[vertIndex] = quadToOffset[vertIndex] + offsetVector
+  repeat with i = 1 to 4 
+    quadToOffset[i] = quadToOffset[i] + offsetVector
   end repeat
   
   return quadToOffset

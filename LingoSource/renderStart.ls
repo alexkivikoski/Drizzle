@@ -1,5 +1,5 @@
 global gTiles, tileSetIndex, gCurrentRenderCamera, gAnyDecals, firstCamRepeat, solidMtrx, gLOprops, gLEprops, gTEprops, gDRMatFixes, gDRInvI, grimeActive, grimeOnGradients, bkgFix, gRRSpreadsMore, slimeFxt
-global DRWhite, DRPxl, DRPxlRect, DRDarkSlimeFix
+global DRWhite, DRPxl, DRPxlRect, DRDarkSlimeFix, gDisableBlackGoo
 
 on exitFrame me
   DRPxl = member("pxl").image
@@ -8,7 +8,8 @@ on exitFrame me
   slimeFxt = getBoolConfig("Slime always affects editor decals")
   DRDarkSlimeFix = getBoolConfig("Dark Slime fix")
   gRRSpreadsMore = getBoolConfig("Rough Rock spreads more")
-  grimeActive = getBoolConfig("Grime")
+  --grimeActive = getBoolConfig("Grime")
+  grimeActive = 0
   grimeOnGradients = getBoolConfig("Grime on gradients")
   bkgFix = getBoolConfig("Gradients with BackgroundScenes fix")
   gDRMatFixes = getBoolConfig("Material fixes")
@@ -27,7 +28,7 @@ on exitFrame me
     _movie.go(9)
   end if
   
-  put "Start render"
+  --put "Start render"
   
   gLOprops.pal = 1
   

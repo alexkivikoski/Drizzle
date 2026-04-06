@@ -172,7 +172,7 @@ namespace Drizzle.SpectreConsoleApp
                     tcs.TrySetResult();
                 }
             };
-            _renderer.DoRender();
+            //_renderer.DoRender();
             await tcs.Task.ConfigureAwait(false);
         }
         static LingoRuntime MakeZygoteRuntime()

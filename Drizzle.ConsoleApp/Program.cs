@@ -15,9 +15,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+//"commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\SU --region --rooms C04 A41 A42 A43 A44 S01 A22 A23 A24 A25"
+//"commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\SU --region --rooms S04 A37 A63 A39 B04 A63 B12 A53 A06 A38 A36 A34 A33 A17 A40"
 //"commandLineArgs": "render D:\\source\\drizzle3\\Drizzle\\Data\\LevelEditorProjects\\World\\SU --region --limit 5"
 CultureFix.FixCulture();
 
@@ -42,11 +45,11 @@ int DoCmdRender(CommandLineArgs.VerbRender options)
 {
     Configuration.Default.PreferContiguousImageBuffers = true;
 
-    Console.WriteLine("Initializing Zygote runtime");
+   //Console.WriteLine("Initializing Zygote runtime");
 
     var zygote = MakeZygoteRuntime();
 
-    Console.WriteLine($"Starting render of {options.Levels.Count} levels");
+   // Console.WriteLine($"Starting render of {options.Levels.Count} levels");
     var sw = Stopwatch.StartNew();
 
 
@@ -67,13 +70,35 @@ int DoCmdRender(CommandLineArgs.VerbRender options)
         checksums = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(chkFile);
     }
 
-    Shuffle(options.Levels, new Random());
+    //Shuffle(options.Levels, new Random());
+
+    var output = new LevelRendererConsoleOutput(options.Levels);
+    output.Active = true;
+    Task.Factory.StartNew(async () =>
+    {
+        try
+        {
+            while (output.Active)
+            {
+
+                output.PrintStatus();
+
+                await Task.Delay(300);
+            }
+        } catch (Exception ex)
+        {
+            //Console.WriteLine(ex.ToString());
+        }
+    });
+    Console.Clear();
 
     Parallel.ForEach(options.Levels, parallelOptions, s =>
     {
-        var renderRuntime = zygote.Clone();
-
         var levelName = Path.GetFileNameWithoutExtension(s);
+        //output.SetRenderer(levelName, null);
+        var renderRuntime = zygote.Clone();
+        output.Active = true;
+        
 
         var levelSw = Stopwatch.StartNew();
         try
@@ -81,11 +106,18 @@ int DoCmdRender(CommandLineArgs.VerbRender options)
             EditorRuntimeHelpers.RunLoadLevel(renderRuntime, s);
 
             var renderer = new LevelRenderer(renderRuntime, null,0);
-            renderer.EnabledStages = Enum.GetValues<RenderStage>().Except([ RenderStage.RenderColors, RenderStage.RenderLight,  RenderStage.Finished]).ToArray();
+            renderer.Overwrite = options.overwrite;
+            output.SetRenderer(levelName, renderer);
+            
+            //renderer.EnabledStages = Enum.GetValues<RenderStage>().Except([ RenderStage.RenderColors, RenderStage.RenderLight,  RenderStage.Finished]).ToArray();
+            var stages = Enum.GetValues<RenderStage>().Except([RenderStage.Finished, RenderStage.RenderColors, RenderStage.Unify, RenderStage.SaveFile]).ToList();
+            //renderer.EnabledStages = Enum.GetValues<RenderStage>().Except([RenderStage.Finished, RenderStage.RenderColors, RenderStage.Unify]).ToArray();
             if (doChecksums)
                 renderer.OnScreenRenderCompleted += (cam, img) => HandleChecksum(levelName, cam, img, checksums);
 
-            renderer.DoRender();
+            renderer.DoRender(stages);
+            output.CompleteRendederer(levelName);
+            renderer.Dispose();
         }
         catch (Exception e)
         {
@@ -98,11 +130,11 @@ int DoCmdRender(CommandLineArgs.VerbRender options)
             Interlocked.Increment(ref errors);
             return;
         }
-
-        Console.WriteLine($"{levelName}: Render succeeded in {levelSw.Elapsed}");
+        
+        //Console.WriteLine($"{levelName}: Render succeeded in {levelSw.Elapsed}");
         Interlocked.Increment(ref success);
     });
-
+    output.Active = false;
     Console.WriteLine($"Finished rendering in {sw.Elapsed}. {errors} errored, {success} succeeded");
     if (checksums != null)
         Console.WriteLine($"{checksumErrors} checksum failures.");

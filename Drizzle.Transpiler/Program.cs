@@ -97,7 +97,7 @@ internal static class Program
         var scripts = Directory.GetFiles(sourcesRoot, "*.lingo")
             .Concat(Directory.GetFiles(sourcesRoot, "*.ls"))
             .Where(x => !SkipScripts.Contains(Path.GetFileNameWithoutExtension(x)))
-            .AsParallel()
+           // .AsParallel()
             .Select(n =>
             {
                 using var reader = new StreamReader(n);

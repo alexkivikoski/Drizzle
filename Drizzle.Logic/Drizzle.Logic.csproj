@@ -4,6 +4,7 @@
         <Nullable>enable</Nullable>
       <LangVersion>latest</LangVersion>
 		<PathMap>$(MSBuildProjectDirectory)=/$(SolutionName)</PathMap>
+		<TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

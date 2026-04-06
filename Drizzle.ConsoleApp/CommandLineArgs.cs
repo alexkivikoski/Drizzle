@@ -1,3 +1,4 @@
+using Drizzle.Logic;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -10,13 +11,14 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
 {
     public abstract record BaseVerb;
 
-    public sealed record VerbRender(int MaxParallelism, List<string> Levels, bool Checksums, string? CompareChecksums) : BaseVerb
+    public sealed record VerbRender(int MaxParallelism, List<string> Levels, bool Checksums, string? CompareChecksums, bool overwrite) : BaseVerb
     {
         public static VerbRender? ContinueParse(IEnumerator<string> enumerator)
         {
             var levels = new List<string>();
-            var parallelism = 0;
+            var parallelism = 6;
             var genChecksums = false;
+            bool overwrite = false;
             string? compareChecksums = null;
 
             while (enumerator.MoveNext())
@@ -40,7 +42,18 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
                         C.WriteLine("Region directory not found");
                     }
                 }
-                else if (arg == "--limit")
+                else if (arg == "--skip")
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        C.WriteLine("Expected level skip count  ");
+                        return null;
+                    }
+
+                    var lim = int.Parse(enumerator.Current);
+                    levels = levels.Skip(lim).ToList();
+                }
+                else if (arg == "--take" || arg == "--limit")
                 {
                     if (!enumerator.MoveNext())
                     {
@@ -50,6 +63,36 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
 
                     var lim = int.Parse(enumerator.Current);
                     levels = levels.Take(lim).ToList();
+                }
+
+                else if (arg == "--containing")
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        C.WriteLine("Expected level name filter");
+                        return null;
+                    }
+
+                    var lim = enumerator.Current;
+                    levels = levels.Where(l=>l.Contains(lim)).ToList();
+                }
+
+
+                else if (arg == "--rooms")
+                {
+                    
+                    List<string> names = new List<string>();
+                    while (enumerator.MoveNext())
+                    {
+                        names.Add(enumerator.Current);
+                    }
+                    if (!names.Any())
+                    {
+
+                        C.WriteLine("Expected list of rooms separated by space");
+                        return null;
+                    }
+                    levels = levels.Where(l => names.Any(n => l.Contains(n))).ToList();
                 }
                 else if (arg == "--parallelism")
                 {
@@ -64,6 +107,10 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
                 else if (arg == "--gen-checksums")
                 {
                     genChecksums = true;
+                }
+                else if (arg == "--overwrite")
+                {
+                    overwrite = true;
                 }
                 else if (arg == "--compare-checksums")
                 {
@@ -87,14 +134,30 @@ public sealed record CommandLineArgs(CommandLineArgs.BaseVerb Verb)
                     levels.Add(arg);
                 }
             }
-
+            if (!overwrite)
+            {
+                foreach (var s in levels.ToList())
+                {
+                    var levelName = Path.GetFileNameWithoutExtension(s);
+                    var leveldir = EditorRuntimeHelpers.GetOutputDir(levelName);
+                    if (File.Exists(Path.Combine(leveldir, "finalImage0.png")))
+                    {
+                        levels.Remove(s);
+                        //options.Levels.Remove(s);
+                    }
+                    else
+                    {
+                       // levelsToRender.Add(s);
+                    }
+                }
+            }
             if (levels.Count == 0)
             {
                 C.WriteLine("No levels specified!");
                 return null;
             }
 
-            return new VerbRender(parallelism, levels, genChecksums, compareChecksums);
+            return new VerbRender(parallelism, levels, genChecksums, compareChecksums,overwrite);
         }
 
         private static void PrintVerbHelp()
@@ -118,7 +181,7 @@ Options:
     {
         parsed = null;
         BaseVerb? verb = null;
-
+        
         using var enumerator = args.GetEnumerator();
 
         while (enumerator.MoveNext())

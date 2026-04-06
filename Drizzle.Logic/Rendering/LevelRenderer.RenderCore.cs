@@ -1,25 +1,21 @@
 using Drizzle.Lingo.Runtime;
-using Drizzle.Lingo.Runtime.Cast;
 using Drizzle.Ported;
-using Microsoft.Scripting;
 using Serilog;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Intrinsics.Arm;
-using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
+
+
+
 
 namespace Drizzle.Logic.Rendering;
 
-public sealed partial class LevelRenderer
+public  partial class LevelRenderer
 {
     private static readonly string PngSoftwareName = $"Drizzle {Assembly.GetExecutingAssembly().GetName().Version}";
 
@@ -29,7 +25,16 @@ public sealed partial class LevelRenderer
 
     private int _framesTotal;
     private int _currentFrame;
-
+    public int CompletedLayers { get; private set; }
+    public List<(RenderStage, DateTime?)> CompletedTimes { get; } = new List<(RenderStage, DateTime?)>();
+    public DateTime StartTime { get; } = DateTime.Now;
+    public DateTime? EndTime { get; private set; }
+    public RenderStage CurrentStage { get; private set; }
+    public int ProgressMax { get; private set; }
+    public int ProgressCurrent { get; private set; }
+    public string LevelName => (string)Movie?.gLoadedName;
+    public bool Overwrite { get; set; }
+    public Exception Exception { get; private set; }
 
     private List<(string, LingoImage)> otherExportedImages = new List<(string, LingoImage)>();
 
@@ -47,8 +52,18 @@ public sealed partial class LevelRenderer
         }
     }
 
-    public void DoRender()
+    public void DoRender(IList<RenderStage> stages)
     {
+        this.EnabledStages = stages.ToArray();
+        
+        this.CompletedTimes.Add((RenderStage.RenderLayers, null));
+        this.CompletedTimes.Add((RenderStage.RenderPropsPreEffects, null));
+        this.CompletedTimes.Add((RenderStage.RenderPropsPreEffects, null));
+        this.CompletedTimes.Add((RenderStage.RenderEffects, null));
+        this.CompletedTimes.Add((RenderStage.RenderPropsPostEffects, null));
+        this.CompletedTimes.Add((RenderStage.RenderLight, null));
+        this.CompletedTimes.Add((RenderStage.Finalize, null));
+
         RenderStart();
 
         // Set up camera order.
@@ -70,8 +85,10 @@ public sealed partial class LevelRenderer
         var levelsDir = Path.Combine(LingoRuntime.MovieBasePath, "Levels");
         var levelDir = Path.Combine(levelsDir, (string)Movie.gLoadedName);
         var layersDir = OutputDir;
+
         
-        if (EnabledStages.Contains(RenderStage.SaveFile))
+
+        //if (EnabledStages.Contains(RenderStage.SaveFile))
         {
 
             // Save image.
@@ -96,13 +113,21 @@ public sealed partial class LevelRenderer
             try
             {
                 if (EnabledStages.Contains(RenderStage.CameraSetup))
+                {
                     RenderSetupCamera(camIndex);
+                }
 
-               
+
 
 
                 if (EnabledStages.Contains(RenderStage.RenderLayers))
+                {
                     RenderLayers();
+                   // OutputImages(layersDir, "layer{0}", "layer{0}prefx");
+                }
+#if DEBUG
+                RenderFinalize();
+#endif
 
                 if (EnabledStages.Contains(RenderStage.RenderPropsPreEffects))
                 {
@@ -128,15 +153,19 @@ public sealed partial class LevelRenderer
 
 
                 if (EnabledStages.Contains(RenderStage.RenderLight))
+                {
                     RenderLight();
+                }
 
                 if (EnabledStages.Contains(RenderStage.Finalize))
                 {
                     RenderFinalize();
-
+                    //SaveImageIfExists(layersDir, "blackOutImg1");
+                    //SaveImageIfExists(layersDir, "blackOutImg2");
+                    //SaveImageIfExists(layersDir, "GradientOutput");
                 }
-
-                if (EnabledStages.Contains(RenderStage.RenderColors))
+#if false
+                if (EnabledStages.Contains(RenderStage.RenderColors) && false)
                 {
                     try
                     {
@@ -152,7 +181,7 @@ public sealed partial class LevelRenderer
                     OutputImages(layersDir, "dpImage{0}");
                     
                 }
-                if (EnabledStages.Contains(RenderStage.SaveFile))
+                if (EnabledStages.Contains(RenderStage.SaveFile) && false)
                 {
                     OutputImages(layersDir, "layer{0}");
                     OutputImages(layersDir, "rainBowMask{0}");
@@ -167,6 +196,7 @@ public sealed partial class LevelRenderer
                     Export2(layersDir, Movie.gExport_flattenedGradientA, "gflattenedGradientA");
                     Export2(layersDir, Movie.gExport_flattenedGradientB, "gflattenedGradientB");
                     Export2(layersDir, Movie.gExport_dpImage, "gdpImage");
+                    
                 }
 
                 if (EnabledStages.Contains(RenderStage.RenderLayerMaterials) && false)
@@ -186,10 +216,10 @@ public sealed partial class LevelRenderer
                 if (EnabledStages.Contains(RenderStage.Unify) && false)
                     RenderUnify();
 
-                if (EnabledStages.Contains(RenderStage.Finished))
+                if (EnabledStages.Contains(RenderStage.Finished) && false)
                     RenderFinished();
 
-                if (EnabledStages.Contains(RenderStage.SaveFile) )
+                if (EnabledStages.Contains(RenderStage.SaveFile) && false )
                 {
 
 
@@ -205,7 +235,7 @@ public sealed partial class LevelRenderer
                     NotifyCompleted(RenderStage.SaveFile);
                 }
 
-
+#endif
 
                 OnScreenRenderCompleted?.Invoke(camIndex, _runtime.GetCastMember("finalImage")!.image!);
                 _countCamerasDone += 1;
@@ -217,10 +247,11 @@ public sealed partial class LevelRenderer
             }
             catch (Exception e)
             {
-                throw new RenderCameraException($"Exception on camera {camIndex}", e);
+                this.Exception = e;
+                throw; //new RenderCameraException($"Exception on camera {camIndex}", e);
             }
         }
-
+        EndTime = DateTime.Now;
         // Output level data.
         //Movie.newmakelevel(Movie.gLoadedName);
     }
@@ -249,7 +280,7 @@ public sealed partial class LevelRenderer
             var fileName2 = Path.Combine(layersDir,
                 $"{filename}.png"
             );
-            var imgSharp2 = image.GetImgSharpImage();
+            using var imgSharp2 = image.GetImgSharpImage();
             if (File.Exists(fileName2))
             {
                 File.Delete(fileName2);
@@ -257,8 +288,30 @@ public sealed partial class LevelRenderer
             imgSharp2.SaveAsPng(fileName2);
         }
     }
+    private void SaveImageIfExists(string layersDir, string membername)
+    {
+        if (this._runtime.GetCastMember(membername)?.image is LingoImage l)
+        {
+            SaveImage(layersDir, membername, l);
+        }
+    }
+    void SaveImage(string layersDir, string filename, LingoImage image)
+    {
+        var fileName2 = Path.Combine(layersDir,
+            $"{filename}.png"
+        );
+
+
+        using var imgSharp2 = image.GetImgSharpImage();
+        if (File.Exists(fileName2))
+        {
+            File.Delete(fileName2);
+        }
+        imgSharp2.SaveAsPng(fileName2);
+    }
     private void OutputAllImages(string layersDir,params string[] excludedNames)
     {
+        
         List<(string filename, LingoImage image)> images = new();
 
         for (int i = 0; i < 30; i++)
@@ -277,38 +330,15 @@ public sealed partial class LevelRenderer
                         // ignored
                         continue;
                     }
-                    images.Add((withNum, img2));
+                    SaveImage(layersDir, withNum, img2);
                 }
             }
             
         }
         foreach (var extra in otherExportedImages)
         {
-            images.Add(extra);
-        }
-        int count = 0;
-        _framesTotal = images.Count;
-
-        RenderStartFrame(RenderStage.SaveFile);
-        var stat = new RenderStageStatus(RenderStage.SaveFile);
-
-        foreach ((string filename, LingoImage image) in images)
-        {
-            _currentFrame = count;
-            SendUpdateStatus(stat);
-
-            var fileName2 = Path.Combine(layersDir,
-                $"{filename}.png"
-            );
-
-
-            var imgSharp2 = image.GetImgSharpImage();
-            if (File.Exists(fileName2))
-            {
-                File.Delete(fileName2);
-            }
-            imgSharp2.SaveAsPng(fileName2);
-            count++;
+            SaveImage(layersDir, extra.Item1,extra.Item2);
+            
         }
     }
     private void RenderStart()
@@ -360,7 +390,7 @@ public sealed partial class LevelRenderer
     }
     private void RenderLayers()
     {
-        
+        CurrentStage = RenderStage.RenderLayers;
         int cols = (int)Movie.gLOprops.size.loch;
         int rows = (int)Movie.gLOprops.size.locv;
 
@@ -411,12 +441,14 @@ public sealed partial class LevelRenderer
 
     private void RenderPropsPreEffects()
     {
+        CurrentStage = RenderStage.RenderPropsPreEffects;
         RenderStartFrame(RenderStage.RenderPropsPreEffects);
         Movie.afterEffects = new LingoNumber(0);
         _runtime.CreateScript<renderPropsStart>().exitframe();
         _framesTotal = Movie.propsToRender.count.IntValue;
 
         var script = _runtime.CreateScript<renderProps>();
+        ProgressMax = Movie.propsToRender.count.IntValue;
         while (Movie.keepLooping == 1)
         {
             if (ShouldSendPreview())
@@ -431,17 +463,65 @@ public sealed partial class LevelRenderer
             }
             if (Movie.c.IntValue % EntitiesPerUpdate == 0)
             {
-                // StatusChanged?.Invoke(new RenderStatus(Movie.c.IntValue / 20, Movie.propsToRender.count.IntValue, false, new(RenderStage.RenderPropsPreEffects)));
+                // StatusChanged?.Invoke(new RenderStatus(Movie.col.IntValue / 20, Movie.propsToRender.count.IntValue, false, new(RenderStage.RenderPropsPreEffects)));
             }
             RenderStartFrame(RenderStage.RenderPropsPreEffects);
             script.newframe();
             _currentFrame = Movie.c.IntValue;
+            ProgressCurrent = Movie.c.IntValue;
         }
         NotifyCompleted(RenderStage.RenderPropsPreEffects);
     }
+    private void RenderEffects2()
+    {
+        CurrentStage = RenderStage.RenderEffects;
+        var script = _runtime.CreateScript<renderEffects>();
+        var effectsList = (LingoList)Movie.gEEprops.effects;
+       // var effectNames = effectsList.List.Select(e => (string)((dynamic)e!).nm).ToArray();
+        var totalCount = effectsList.List.Count;
+        var cols = (int)Movie.gLOprops.size.loch;
+        var rows = (int)Movie.gLOprops.size.locv;
 
+        ProgressMax = totalCount * cols * rows;
+        ProgressCurrent = 0;
+        List<(int col, int row)> blocks = new List<(int col, int row)>();
+        for (int col = 0; col < cols-1; col++)
+        {
+            for (int row = 0; row < rows-1; row++)
+            {
+                blocks.Add((col, row));
+            }
+        }
+        for (int r = 0; r < totalCount; r++)
+        {
+            Parallel.ForEach(blocks, (block) =>
+            {
+                //-- q2 and c2 are the positions of the tile in global-space ( equivalent to (x, z) )
+                int q2 = block.col + 1;
+                int c2 = block.row + 1;
+                try
+                {
+                    if ((q2 > 0)  && (q2 <= Movie.gLOprops.size.locH) && (c2 > 0) && (c2 <= Movie.gLOprops.size.locV)) {
+                        script.effectontile(q2, c2, q2, c2, effectsList[r + 1]);
+                    }
+                    else
+                    {
+
+                    }
+                } catch (Exception ex)
+                {
+                    throw;
+                }
+                ProgressCurrent += 1;
+            });
+        }
+
+    }
     private void RenderEffects()
     {
+
+        CurrentStage = RenderStage.RenderEffects;
+        ProgressMax = ((LingoList)Movie.gEEprops.effects).count.IntValue;
         RenderStartFrame(RenderStage.RenderEffects);
         _runtime.CreateScript<renderEffectsStart>().exitframe();
 
@@ -449,6 +529,7 @@ public sealed partial class LevelRenderer
 
         while (Movie.keepLooping == 1)
         {
+            ProgressCurrent = Movie.r.IntValue;
             if (ShouldSendPreview())
             {
                 var images = new LingoImage[30];
@@ -476,14 +557,17 @@ public sealed partial class LevelRenderer
 
     private void RenderPropsPostEffects()
     {
+        CurrentStage = RenderStage.RenderPropsPostEffects;
         RenderStartFrame(RenderStage.RenderPropsPostEffects);
         Movie.afterEffects = new LingoNumber(1);
         _runtime.CreateScript<renderPropsStart>().exitframe();
 
         var script = _runtime.CreateScript<renderProps>();
         _framesTotal = Movie.propsToRender.count.IntValue;
+        ProgressMax = Movie.propsToRender.count.IntValue;
         while (Movie.keepLooping == 1)
         {
+            ProgressCurrent = Movie.c.IntValue;
             if (ShouldSendPreview())
             {
                 var images = new LingoImage[30];
@@ -497,14 +581,28 @@ public sealed partial class LevelRenderer
 
             RenderStartFrame(RenderStage.RenderPropsPostEffects);
             script.newframe();
+            
         }
 
         // Can clear prop/tile LRU cache now since we won't use it from here on.
         Movie.ImageCacheClear();
     }
-
+    private void RenderFinal()
+    {
+        var unify = _runtime.CreateScript<unify>();
+        var finalize = _runtime.CreateScript<finalize>();
+        var renderColors = _runtime.CreateScript<renderColors>();
+        for (var j = 0; j < 30; j++)
+        {
+            Movie.c = j;
+            //finalize.exitframe();
+            unify.exitframe();
+            renderColors.newframe();
+        }
+    }
     private void RenderLight()
     {
+        CurrentStage = RenderStage.RenderLight;
         RenderStartFrame(RenderStage.RenderLight);
         _runtime.CreateScript<renderLightStart>().exitframe();
 
@@ -513,8 +611,10 @@ public sealed partial class LevelRenderer
 
         var script = _runtime.CreateScript<renderLight>();
         LingoImage[] images = null;
+        ProgressMax = 30;
         while (Movie.keepLooping == 1)
         {
+            ProgressCurrent = Movie.c.IntValue;
             if (ShouldSendPreview() || EnabledStages.Contains(RenderStage.SaveFile))
             {
                 images = new LingoImage[30];
@@ -533,7 +633,8 @@ public sealed partial class LevelRenderer
             if (EnabledStages.Contains(RenderStage.SaveFile) && images?.ElementAtOrDefault(curr) is LingoImage img)
             {
                 var fileName2 = Path.Combine(OutputDir, $"layer{curr}sh.png");
-                img.GetImgSharpImage().SaveAsPng(fileName2);
+                using var sh = img.GetImgSharpImage();
+                sh.SaveAsPng(fileName2);
             }
         }
         NotifyCompleted(RenderStage.RenderLight);
@@ -545,9 +646,69 @@ public sealed partial class LevelRenderer
     }
     private void RenderFinalize()
     {
+        CurrentStage = RenderStage.Finalize;
         RenderStartFrame(RenderStage.Finalize);
-        _runtime.CreateScript<finalize>().exitframe();
-        _runtime.CreateScript<unify>().exitframe();
+        var script = _runtime.CreateScript<finalize>();
+        script.startframe();
+        Movie.c = 1;
+        Movie.keepLooping = 1;
+        var width = Movie.gLOprops.size.loch.IntValue * 20;
+        ProgressMax = width-1;
+
+        for (int i = 0; i < 30; i++)
+        {
+            //ProgressCurrent = i*width;
+            int layerNum = 29 - i;
+            CurrentStage = RenderStage.Finalize;
+            script.finalizelayer(i+1);
+            var fileName2 = Path.Combine(OutputDir, $"finalImage{layerNum}.png");
+            if (File.Exists(fileName2) && !Overwrite) continue;
+            for (int x = 0; x < width; x++)
+            {
+                ProgressCurrent = x;
+                for (int y = 0; y < Movie.gLOprops.size.locv.IntValue * 20; y++)
+                {
+                    script.processcolors(y, x);
+                }
+                
+            }
+            if (layerNum == 0) {
+                try
+                {
+                    script.paintdecalcolors();
+                } catch (Exception ex)
+                {
+                    this.Exception = ex;
+                }
+            }
+#if false
+            if (EnabledStages.Contains(RenderStage.SaveFile))
+            {
+                CurrentStage = RenderStage.SaveFile;
+                string[] fils = ["finalImage", "fogImage", "dpImage", "shadowImage", "rainBowMask", "flattenedGradientA", "flattenedGradientB", "finalDecalImage"];
+                foreach (string fil in fils) {
+                    if (this._runtime.GetCastMember(fil)?.image is LingoImage img)
+                    {
+                        var fileName2 = Path.Combine(OutputDir, $"{fil}{layerNum}.png");
+                        using var sh = img.GetImgSharpImage();
+                        sh.SaveAsPng(fileName2);
+                    }
+                }
+            } else
+            {
+#endif
+                // just finalimage
+                //SaveImageIfExists(OutputDir, $"finalImage{layerNum}");
+                if (this._runtime.GetCastMember($"finalImage")?.image is LingoImage img)
+                {
+                    
+                    using var sh = img.GetImgSharpImage();
+                    sh.SaveAsPng(fileName2);
+                }
+           // }
+            CompletedLayers++;
+        }
+            //_runtime.CreateScript<unify>().exitframe();
         NotifyCompleted(RenderStage.Finalize);
     }
     private void Export2(string layersDir, LingoList gExport, string outputName)
@@ -563,7 +724,7 @@ public sealed partial class LevelRenderer
                 var fileName2 = Path.Combine(layersDir,
                  $"{outputName}{i}.png"
                 );
-                var imgSharp2 = img2.GetImgSharpImage();
+                using var imgSharp2 = img2.GetImgSharpImage();
                 if (File.Exists(fileName2))
                 {
                     File.Delete(fileName2);
@@ -573,7 +734,7 @@ public sealed partial class LevelRenderer
             }
         }
     }
-    private void RenderColors()
+    private void RenderColors(string exportPath = null)
     {
         var oldRenderColors = Environment.GetEnvironmentVariable("DRIZZLE_OLD_RENDER_COLORS") is not (null or "0");
         oldRenderColors = true;
@@ -589,7 +750,7 @@ public sealed partial class LevelRenderer
                 while (Movie.keepLooping == 1)
                 {
                     RenderStartFrame(RenderStage.RenderColors);
-                    //StatusChanged?.Invoke(new RenderStatus(Movie.c.IntValue + (i+1) * 800, 800*30, false, new RenderStageStatus(RenderStage.RenderColors)));
+                    //StatusChanged?.Invoke(new RenderStatus(Movie.col.IntValue + (i+1) * 800, 800*30, false, new RenderStageStatus(RenderStage.RenderColors)));
                     RenderColorsNewFramee(i);
                 }
             }
@@ -606,9 +767,15 @@ public sealed partial class LevelRenderer
             {
                 _currentFrame = Movie.c.IntValue;
                 RenderStartFrame(RenderStage.RenderColors);
-                //StatusChanged?.Invoke(new RenderStatus(Movie.c.IntValue, 800, false, new RenderStageStatus(RenderStage.RenderColors)));
+                //StatusChanged?.Invoke(new RenderStatus(Movie.col.IntValue, 800, false, new RenderStageStatus(RenderStage.RenderColors)));
                 Log.Debug("RenderColors: " +  _currentFrame);
                 script.newframe();
+                if (exportPath != null)
+                {
+                    var thisLayer = this.Movie.DRFinalImage;
+                     
+
+                }
             }
         }
         NotifyCompleted(RenderStage.RenderColors);

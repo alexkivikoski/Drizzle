@@ -1503,11 +1503,11 @@ on seenByCamera me, camNum, pos
   
   cameraPos = gCameraProps.cameras[camNum]
   
-  if pos.inside(rect(cameraPos.locH, cameraPos.locV, cameraPos.locH+1400, cameraPos.locV+800)+(rect(-15, -10, 15, 10)*20))then
+  --if pos.inside(rect(cameraPos.locH, cameraPos.locV, cameraPos.locH+1400, cameraPos.locV+800)+(rect(-15, -10, 15, 10)*20))then
     return 1
-  else
-    return 0
-  end if
+  --else
+  --  return 0
+  --end if
   
 end
 

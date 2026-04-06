@@ -1,6 +1,7 @@
-﻿using System.IO;
 using Drizzle.Lingo.Runtime;
 using Drizzle.Ported;
+using System.IO;
+using static Drizzle.Lingo.Runtime.LingoGlobal;
 
 namespace Drizzle.Logic;
 
@@ -12,6 +13,17 @@ public static class EditorRuntimeHelpers
 
         startUp.exitframe();
     }
+    public static string GetOutputDir(string levelname)
+    {
+        
+        
+        
+            var levelsDir = Path.Combine(LingoRuntime.MovieBasePath, "Levels");
+            var levelDir = Path.Combine(levelsDir, levelname);
+            return levelDir;
+        
+    }
+
 
     public static void RunLoadLevel(LingoRuntime runtime, string filePath)
     {
